@@ -28,14 +28,44 @@
         <button>Current</button>
     </div>
 
-    <div class="col-sm-1">
-        <p><span>Text</span></p>
-    </div>
-    <div class="col-sm-5">
-        <textarea ></textarea>
-        <input type="radio" value="correct">
+    <div class="row">
+        <div class="col-sm-1">
+            <p><span>Text</span></p>
+        </div>
+        <div class="col-sm-6">
+            <textarea class="form-control" rows="2"></textarea>
+
+        </div>
+        <div class="col-sm-3">
+            <div class="radio">
+                <label>
+                <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>
+                  Correct
+                </label>
+                <label>
+                    <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+                    Incorrect
+                </label>
+                <label>
+                    <input type="radio" name="optionsRadios" id="optionsRadios3" value="option2">
+                    ambiguous
+                </label>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <button class="btn btn-success" type="button">Annotate</button>
+            <button class="btn btn-success" type="button">Skip</button>
+        </div>
     </div>
 
+
+    <div>
+        <p>
+            <span style="font-family:'Arial Bold', 'Arial';font-weight:700;font-size:18px;">Text</span>
+            <span>拨打三师兄</span>
+        </p>
+
+    </div>
 
 
 
