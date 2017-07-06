@@ -1,0 +1,10 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from django.conf.urls import url, include
+from accounts import user
+
+urlpatterns = [
+    url(r'^login/$', user.login, name='login'),
+    url(r'^logout/$', user.logout, name='logout'),
+]
