@@ -27,6 +27,23 @@ body {
 .theme-showcase .navbar .container {
   width: auto;
 }
+.icons-sprite,.icons-icon-edit,.icons-icon-remove,.icons-logo,footer.navbar-fixed-bottom .copyright-message,.table-striped a.edit,.icon-custom-remove
+{
+    background:url(/static/img/icons.png) no-repeat
+}
+.icon-time{background-position:-48px  -24px}
+
+.copyright-message{display:block;text-align:center;width:100%}
+
+.icons-sprite,.icons-icon-edit,.icons-icon-remove,.icons-logo,footer.navbar-fixed-bottom .copyright-message,.table-striped a.edit,.icon-custom-remove
+{
+    background:url(/static/img/icons.png) no-repeat
+}
+
+footer.navbar-fixed-bottom .copyright-message
+{font-size:11px;line-height:30px;color:#cacaca;padding:3px 0px 4px 0px;text-align:left;background-position:0 0;background-position:right top
+}
+
 
 #u127 {
     position: absolute;
