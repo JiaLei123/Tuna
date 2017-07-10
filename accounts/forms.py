@@ -7,9 +7,9 @@ from models import UserInfo, RoleList, PermissionList
 
 class LoginUserForm(forms.Form):
     email = forms.CharField(label='Email', error_messages={'required': 'email should not be empty'},
-                            widget=forms.TextInput(attrs={'class': 'form-control'}))
+                            widget=forms.TextInput(attrs={'class': 'string email optional', 'size': 35}))
     password = forms.CharField(label='Password', error_messages={'required': 'password should not be empty'},
-                               widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+                               widget=forms.PasswordInput(attrs={'class': 'password optional', 'size': 35}))
 
     def __init__(self, request=None, *args, **kwargs):
         self.request = request

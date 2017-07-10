@@ -1,46 +1,44 @@
-{% load staticfiles %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Annotation Review Tool Login</title>
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+{% extends 'base.html' %}
+{% block content %}
+<div id="page-content" class="container container-fluid" role="main">
+    <div class="col-md-3">
+    </div>
+    <div class="col-md-6">
+        <div class="panel-signin login-form">
+            <h2>Sign in</h2>
+
+            <form class="login-content" role="form" action="{% url 'login' %}" method="POST">
 
 
-    {% include 'link_css.html' %}
-    <link rel="stylesheet" href="{% static '/custom-css/signin.css' %} ">
+                {% csrf_token %}
+                {% for item in form %}
 
-</head>
-<body>
-    <div class="panel panel-success panel-signin">
-        <div class="panel-heading">
-            <h3 class="panel-title">Please Sign In</h3>
-        </div>
-        <form class="form-signin" role="form" about="{% url 'login' %}" method="POST">
-
-            {% csrf_token %}
-            {% for item in form %}
-
-                <div class="form-signin">
-                    <div class="control-label col-md-3">
+                <div class="form-inputs panel-signin row">
+                    <div class="control-label col-md-2">
                         {{item.label}}
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-5">
                         {{item}}
                     </div>
-                    <div class="col-md-offset-1 col-md-10">
+                    <div class="col-md-offset-1 col-md-1">
                         {{item.errors}}{{error_msg}}
                     </div>
                 </div>
-            {% endfor %}
-            <div class="box-footer">
-                <input type="hidden" name="next" value="{{ next }}"/>
-                <button type="submit" class="btn btn-lg btn-primary btn-block">Login</button>
+                {% endfor %}
 
-            </div>
-            <label>forget you password</label>
-        </form>
+                <div class="form-actions">
+                    <input type="hidden" name="next" value="{{ next }}"/>
+                    <input class="btn btn btn-success" name="commit" type="submit" value="Log in">
+                    <div class="shared-links">
+                        <a href="/users/password/new">Forgot your password?</a><br>
+                        <a href="/users/confirmation/new">Didn't receive confirmation instructions?</a><br>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
-</body>
-</html>
+    <div class="col-md-3">
+    </div>
+</div>
+
+{% endblock %}
