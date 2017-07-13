@@ -7,7 +7,7 @@
         <div class="panel-signin login-form">
             <h2>Sign in</h2>
 
-            <form class="login-content" role="form" action="{% url 'login' %}" method="POST">
+            <form class="login-content" role="form" action="{% url 'accounts:login' %}" method="POST">
 
 
                 {% csrf_token %}

@@ -8,19 +8,19 @@
             <p>3.After all done, it need click submit button to finish task</p>
         </div>
 
-        <div class="page-header">
-            <p>
-                <button class="btn btn-success" type="button">Start Review</button>
-                <button class="btn btn-success" type="button">Continue Review</button>
-            </p>
-        </div>
+        <!--<div class="page-header">-->
+            <!--<p>-->
+                <!--<button class="btn btn-success" type="button">Start Review</button>-->
+                <!--<button class="btn btn-success" type="button">Continue Review</button>-->
+            <!--</p>-->
+        <!--</div>-->
 
 
         <h3>
-            <span class="label label-primary">Sentence {{annotation_review_item.annotation_sentence}}</span>
+            <span class="label label-primary">Sentence {{review_sentence.language}}</span>
         </h3>
         <div class="progress">
-            <label>{{annotation_review_item.annotation_review_index}}/{{annotation_review_item.work_set_count}}</label>
+            <label>{{review_sentence.review_sentence_index}}/{{review_sentence.work_set_count}}</label>
             <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0"
                  aria-valuemax="100" style="width: 80%">
                 <!--<span class="sr-only">20% Complete (success)</span>-->
@@ -31,12 +31,13 @@
             <div class="col-sm-12">
                 <!--<button>&lt;Previous</button>-->
                 <!--<button>Current;&gt;</button>-->
-                <form action="{% url 'annotation_review:vote' annotation_review_item.id %}" method="post">
+                <form action="{% url 'annotation_review:vote' review_sentence.id %}" method="post">
+                    {% csrf_token %}
                     <div class="col-sm-1">
                         <p><span>Text</span></p>
                     </div>
                     <div class="col-sm-6">
-                        <textarea class="form-control" rows="2">{{annotation_review_item.annotation_review_text}}</textarea>
+                        <textarea class="form-control" rows="2">{{review_sentence.review_sentence_text}}</textarea>
                     </div>
                     <div class="col-sm-3">
                         <div class="radio">
@@ -58,7 +59,7 @@
                         <input class="btn btn-success" type="submit" value="Submit">
                     </div>
                 </form>
-                <form action="{% url 'annotation_review:vote' annotation_review_item.id %}" method="post">
+                <form action="{% url 'annotation_review:vote' review_sentence.id %}" method="post">
                     <div class="col-sm-1">
                         <input class="btn btn-success" type="submit" value="Skip">
                     </div>
