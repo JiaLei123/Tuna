@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 from .models import ReviewSentence, WorkSet
 # from accounts.permission import permission_verify
 from accounts.models import UserInfo
+from django.views.decorators.csrf import csrf_exempt
 
 @login_required()
 # @permission_verify()
@@ -58,3 +59,11 @@ def skip(request, annotation_review_id):
 @login_required()
 def continue_work(request):
     iUser = UserInfo.objects.get(username=request.user)
+
+
+
+
+@csrf_exempt
+def valid_ticket_number(request):
+    ticket = request.POST['ticket_number']
+    return HttpResponse('{"valid":true}')

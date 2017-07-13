@@ -14,4 +14,7 @@ urlpatterns = [
     url(r'^(?P<annotation_review_id>[0-9]+)/skip/$', views.skip, name='skip'),
     # ex: /annotation_review/continue/
     url(r'^continue_work/$', views.continue_work, name='skip'),
+
+    url(r'^valid_ticket_number/$', views.valid_ticket_number, name='skip'),
+
 ]

@@ -10,9 +10,128 @@
 
         <div class="page-header">
             <p>
-                <button class="btn btn-success" type="button">Start Review</button>
-                <a class="btn btn-success" href="../continue_work/">Continue Review</a>
+                <button class="btn btn-success" data-toggle="modal" data-target="#start_task_Modal">Start Review</button>
+                <button class="btn btn-success" data-toggle="modal" data-target="#continue_review_Modal">Continue Review</button>
             </p>
         </div>
+
+        <div class="modal fade" id="start_task_Modal" tabindex="-1" role="dialog" aria-labelledby="start_task_ModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                        <h4 class="modal-title" id="start_task_ModalLabel">Start Task</h4>
+                    </div>
+                    <form class="form-horizontal" id="start_task_form" role="form" action="" method="POST">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="language_select" class="col-sm-3 control-label">Language</label>
+                            <div class="col-sm-8">
+                                <select id="language_select">
+                                    {% for x in language_list %}
+                                        <option value="{{x.id}}">{{x.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="file_name" class="col-sm-3 control-label">File Name</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="file_name" name="file_name" placeholder="BMW35UP_Phase2.FY17Q2_Mar.nula-2256.test.accuracy">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="ticket_number" class="col-sm-3 control-label">Ticket Number</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="ticket_number" name="ticket_number" placeholder="PTNLU-7514">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="task_type_select" class="col-sm-3 control-label">Task Type</label>
+                            <div class="col-sm-8">
+                                <select id="task_type_select">
+                                    {% for x in task_type_list %}
+                                        <option value="{{x.id}}">{{x.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            <input type="submit" class="btn btn-primary" value="OK">
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="continue_review_Modal" tabindex="-1" role="dialog" aria-labelledby="continue_review_ModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                        <h4 class="modal-title" id="continue_review_ModalLabel">Continue Review</h4>
+                    </div>
+                    <form class="form-horizontal" id="continue_review_form" role="form" action="" method="POST">
+                        <div class="form-group">
+                            <label for="task_select" class="col-sm-3 control-label">Task Name</label>
+                            <div class="col-sm-8">
+                                <select id="task_select">
+                                    {% for x in work_set %}
+                                        <option value="{{x.id}}">{{x.work_set_name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            <input type="submit" class="btn btn-primary" disabled="true" value="OK">
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+
+        <script type="text/javascript">
+        $(document).ready(function() {
+            $('#start_task_form').bootstrapValidator({
+                message: 'This value is not valid',
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    file_name: {
+                        group: '.col-sm-8',
+                        validators: {
+                            notEmpty: {
+                                message: 'The file name is required and cannot be empty'
+                            }
+                        }
+                    },
+                    ticket_number: {
+                        group: '.col-lg-8',
+                        validators: {
+                            notEmpty: {
+                                message: 'The ticket number is required and cannot be empty'
+                            },
+                            remote: {
+                                type: 'POST',
+                                url: '/annotation_review/valid_ticket_number/',
+                                message: 'The ticket number is not available'
+                            },
+                        }
+                    },
+                }
+            });
+        });
+
+        </script>
+
     </div>
 {% endblock %}
