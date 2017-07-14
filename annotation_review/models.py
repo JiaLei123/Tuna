@@ -8,14 +8,30 @@ import django.utils.timezone as timezone
 
 # Create your models here.
 
+class Language(models.Model):
+    name = models.CharField('sentence language name', max_length=10)
+    # create time, last modify time
+    created_at = models.DateTimeField('language create datetime', default=timezone.now)
+    update_at = models.DateTimeField('language last modify datetime', auto_now=True)
+
+
+class TaskType(models.Model):
+    name = models.CharField('task type name', max_length=50)
+    # create time, last modify time
+    created_at = models.DateTimeField('task type create datetime', default=timezone.now)
+    update_at = models.DateTimeField('task type last modify datetime', auto_now=True)
+
 
 class WorkSet(models.Model):
     work_set_name = models.CharField('work set name, it equal to the task file name', max_length=255)
     is_complete = models.BooleanField('identify if work set is completely', default=False)
+    ticket_number = models.CharField('ticket number which this work set belong to', max_length=30)
+    # create time, last modify time
     created_at = models.DateTimeField('work set create datetime', default=timezone.now)
     update_at = models.DateTimeField('work set last modify datetime', auto_now=True)
-
-    user_id = models.ForeignKey(UserInfo)
+    # Foreign key
+    task_type = models.ForeignKey(TaskType)
+    user = models.ForeignKey(UserInfo)
 
 
 class ReviewSentence(models.Model):
@@ -25,19 +41,8 @@ class ReviewSentence(models.Model):
     sentence_text = models.CharField('review sentence origin text without annotation info', max_length=1000)
     language = models.CharField('the language this sentence belong to', max_length=20)
     work_set_count = models.IntegerField('the total number of sentence in work set')
+    # create time, last modify time
     created_at = models.DateTimeField('review sentence create datetime', default=timezone.now)
     update_at = models.DateTimeField('review sentence last modify datetime', auto_now=True)
-
+    # Foreign key
     work_set = models.ForeignKey(WorkSet)
-
-
-class Language(models.Model):
-    name = models.CharField('sentence language name', max_length=10)
-    created_at = models.DateTimeField('language create datetime', default=timezone.now)
-    update_at = models.DateTimeField('language last modify datetime', auto_now=True)
-
-
-class TaskType(models.Model):
-    name = models.CharField('task type name', max_length=50)
-    created_at = models.DateTimeField('task type create datetime', default=timezone.now)
-    update_at = models.DateTimeField('task type last modify datetime', auto_now=True)

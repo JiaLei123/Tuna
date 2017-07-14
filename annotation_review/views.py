@@ -9,6 +9,9 @@ from .models import ReviewSentence, Language, TaskType, WorkSet
 # from accounts.permission import permission_verify
 from accounts.models import UserInfo
 from django.views.decorators.csrf import csrf_exempt
+from lib import file_accessor
+import os
+
 
 @login_required()
 # @permission_verify()
@@ -19,16 +22,16 @@ def index(request):
         "language_list": language_list,
         "task_type_list": task_type_list}
 
-
     return render(request, 'annotation_review/index.html', context)
+
 
 @login_required()
 def detail(request, annotation_review_id):
     try:
         # annotation_review_item = AnnotationReviewItem.objects.get(pk=annotation_review_id)
-        review_sentence= ReviewSentence()
-        review_sentence.review_sentence_index=1
-        review_sentence.review_sentence_text="This is just example"
+        review_sentence = ReviewSentence()
+        review_sentence.review_sentence_index = 1
+        review_sentence.review_sentence_text = "This is just example"
         review_sentence.work_set_count = 200
         review_sentence.id = 1
         review_sentence.language = "zh-cn"
@@ -58,20 +61,40 @@ def vote(request, annotation_review_id):
         # user hits the Back button.
         return HttpResponseRedirect(reverse('annotation_review:detail', args=(p.id + 1,)))
 
+
 @login_required()
 def skip(request, annotation_review_id):
     return HttpResponseRedirect(reverse('annotation_review:detail', args=(1,)))
 
 
+@login_required()
 def start_work(request):
     user = UserInfo.objects.get(email=request.user)
-    work_set_name = request.POST['']
 
+    language_name = request.POST['language_name']
+    language = Language.objects.get(id=language_name)
 
+    task_type_name = request.POST['task_type_name']
+    task_type = TaskType.objects.get(id=task_type_name)
 
+    file_path = request.POST['file_name']
+    ticket_number = request.POST['ticket_number']
+    work_set_name = os.path.basename(file_path)
+    work_set = WorkSet(work_set_name=work_set_name, is_complete=False, ticket_number=ticket_number, task_type=task_type,
+                       user=user)
+    work_set.save()
+    accessor = file_accessor.FileAccessor(file_path)
+    sentence_list = accessor.read_file()
+    if sentence_list:
+        i=1
+        for sentence in sentence_list:
+            review_sentence = ReviewSentence(review_sentence_index=i, review_sentence_result=0,
+                                             review_sentence_text=sentence, sentence_text="", language=language.id,
+                                             work_set_count=len(sentence_list), work_set=work_set)
+            review_sentence.save()
+            i=i+1
 
     return HttpResponseRedirect(reverse('annotation_review:detail', args=(1,)))
-
 
 
 @login_required()
@@ -79,12 +102,14 @@ def continue_work(request):
     user = UserInfo.objects.get(username=request.user)
 
 
-
-
 @csrf_exempt
-def valid_ticket_number(request):
-    ticket = request.POST['ticket_number']
-    return HttpResponse('{"valid":true}')
+def valid_file_name(request):
+    file_name = request.POST['file_name']
+    accessor = file_accessor.FileAccessor(file_name)
+    valid = accessor.file_exit_valid()
+    response = '{"valid":%s}' % valid
+    return HttpResponse(response.lower())
+
 
 @csrf_exempt
 def valid_ticket_number(request):
