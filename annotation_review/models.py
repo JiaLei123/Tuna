@@ -38,6 +38,7 @@ class ReviewSentence(models.Model):
     review_sentence_index = models.IntegerField('review sentence index for the work set')
     review_sentence_result = models.IntegerField('review sentence result, it should be 1, 2, 3')
     review_sentence_text = models.CharField('review sentence text with annotation info', max_length=1000)
+    correct_sentence_text = models.CharField('correct sentence text for the incorrect sentence', max_length=1000)
     sentence_text = models.CharField('review sentence origin text without annotation info', max_length=1000)
     language = models.CharField('the language this sentence belong to', max_length=20)
     work_set_count = models.IntegerField('the total number of sentence in work set')

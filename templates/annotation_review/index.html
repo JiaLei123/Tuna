@@ -75,22 +75,22 @@
                         <h4 class="modal-title" id="continue_review_ModalLabel">Continue Review</h4>
                     </div>
                     <form class="form-horizontal" id="continue_review_form" role="form" action="" method="POST">
+                        {% csrf_token %}
                         <div class="form-group">
-                            <label for="task_select" class="col-sm-3 control-label">Task Name</label>
+                            <label for="work_set_select" class="col-sm-3 control-label">Task Name</label>
                             <div class="col-sm-8">
-                                <select id="task_select">
-                                    {% for x in work_set %}
-                                        <option value="{{x.id}}">{{x.work_set_name}}</option>
+                                <select id="work_set_select" name="work_set_id">
+                                    {% for work_set in work_set_list %}
+                                        <option value="{{work_set.id}}">{{work_set.work_set_name}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                            <input type="submit" class="btn btn-primary" disabled="true" value="OK">
+                            <input type="submit" class="btn btn-primary" value="OK">
                         </div>
                     </form>
-
                 </div>
             </div>
         </div>
