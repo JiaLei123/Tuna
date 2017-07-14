@@ -13,8 +13,12 @@ urlpatterns = [
     # ex: /annotation_review/5/skip/
     url(r'^(?P<annotation_review_id>[0-9]+)/skip/$', views.skip, name='skip'),
     # ex: /annotation_review/continue/
-    url(r'^continue_work/$', views.continue_work, name='skip'),
+    url(r'^continue_work/$', views.continue_work, name='continue_work'),
 
-    url(r'^valid_ticket_number/$', views.valid_ticket_number, name='skip'),
+    url(r'^start_work/$', views.start_work, name='start_work'),
+
+    #ajax data valid function
+    url(r'^valid_ticket_number/$', views.valid_ticket_number, name='valid_file_name'),
+    url(r'^valid_file_name/$', views.valid_file_name, name='valid_file_name'),
 
 ]

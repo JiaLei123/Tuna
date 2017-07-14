@@ -22,7 +22,7 @@
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
                         <h4 class="modal-title" id="start_task_ModalLabel">Start Task</h4>
                     </div>
-                    <form class="form-horizontal" id="start_task_form" role="form" action="" method="POST">
+                    <form class="form-horizontal" id="start_task_form" role="form" action="{% url 'annotation_review:start_work' %}" method="post">
                         {% csrf_token %}
                         <div class="form-group">
                             <label for="language_select" class="col-sm-3 control-label">Language</label>
@@ -111,7 +111,12 @@
                         validators: {
                             notEmpty: {
                                 message: 'The file name is required and cannot be empty'
-                            }
+                            },
+                            remote: {
+                                type: 'POST',
+                                url: '/annotation_review/valid_file_name/',
+                                message: 'The file is not available'
+                            },
                         }
                     },
                     ticket_number: {

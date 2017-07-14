@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.core.urlresolvers import reverse
-from .models import ReviewSentence, WorkSet
+from .models import ReviewSentence, Language, TaskType, WorkSet
 # from accounts.permission import permission_verify
 from accounts.models import UserInfo
 from django.views.decorators.csrf import csrf_exempt
@@ -13,7 +13,14 @@ from django.views.decorators.csrf import csrf_exempt
 @login_required()
 # @permission_verify()
 def index(request):
-    return render(request, 'annotation_review/index.html', locals())
+    language_list = Language.objects.all()
+    task_type_list = TaskType.objects.all()
+    context = {
+        "language_list": language_list,
+        "task_type_list": task_type_list}
+
+
+    return render(request, 'annotation_review/index.html', context)
 
 @login_required()
 def detail(request, annotation_review_id):
@@ -56,12 +63,28 @@ def skip(request, annotation_review_id):
     return HttpResponseRedirect(reverse('annotation_review:detail', args=(1,)))
 
 
+def start_work(request):
+    user = UserInfo.objects.get(email=request.user)
+    work_set_name = request.POST['']
+
+
+
+
+    return HttpResponseRedirect(reverse('annotation_review:detail', args=(1,)))
+
+
+
 @login_required()
 def continue_work(request):
-    iUser = UserInfo.objects.get(username=request.user)
+    user = UserInfo.objects.get(username=request.user)
 
 
 
+
+@csrf_exempt
+def valid_ticket_number(request):
+    ticket = request.POST['ticket_number']
+    return HttpResponse('{"valid":true}')
 
 @csrf_exempt
 def valid_ticket_number(request):
