@@ -74,7 +74,7 @@
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
                         <h4 class="modal-title" id="continue_review_ModalLabel">Continue Review</h4>
                     </div>
-                    <form class="form-horizontal" id="continue_review_form" role="form" action="" method="POST">
+                    <form class="form-horizontal" id="continue_review_form" role="form" action="{% url 'annotation_review:continue_work' %}" method="POST">
                         {% csrf_token %}
                         <div class="form-group">
                             <label for="work_set_select" class="col-sm-3 control-label">Task Name</label>

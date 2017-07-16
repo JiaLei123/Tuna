@@ -31,13 +31,13 @@ def index(request):
 @login_required()
 def detail(request, annotation_review_id):
     try:
-        # annotation_review_item = AnnotationReviewItem.objects.get(pk=annotation_review_id)
-        review_sentence = ReviewSentence()
-        review_sentence.review_sentence_index = 1
-        review_sentence.review_sentence_text = "This is just example"
-        review_sentence.work_set_count = 200
-        review_sentence.id = 1
-        review_sentence.language = "zh-cn"
+        review_sentence = ReviewSentence.objects.get(pk=annotation_review_id)
+        # review_sentence = ReviewSentence()
+        # review_sentence.review_sentence_index = 1
+        # review_sentence.review_sentence_text = "This is just example"
+        # review_sentence.work_set_count = 200
+        # review_sentence.id = 1
+        # review_sentence.language = "zh-cn"
 
     except ReviewSentence.DoesNotExist:
         raise Http404("Annotation Review Item does not exist")
