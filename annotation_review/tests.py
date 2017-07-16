@@ -9,6 +9,7 @@ import json
 
 class AnnotationReviewTestCase(TestCase):
     def setUp(self):
+
         pass
 
     def test_start_work(self):
@@ -18,5 +19,10 @@ class AnnotationReviewTestCase(TestCase):
         data['task_type_name'] = 1
         data['file_name'] = r'H:\Chinese_translation_Util\News.grm'
         data['ticket_number'] = 'PTNLU_2276'
-
-        response = c.post("/start_work/", json.dumps(data))
+        # c.login(username='lei.jia@nuance.com', password='Motorola123!')
+        login_data = {}
+        login_data['email'] = 'lei.jia@nuance.com'
+        login_data['password'] = 'Motorola123'
+        response = c.post("/accounts/login/", data)
+        response = c.post("/annotation_review/unit_test/", data)
+        self.assertEqual(response.status_code, 400)

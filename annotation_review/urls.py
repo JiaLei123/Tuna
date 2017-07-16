@@ -21,4 +21,6 @@ urlpatterns = [
     url(r'^valid_file_name/$', views.valid_file_name, name='valid_file_name'),
     url(r'^valid_ticket_number/$', views.valid_ticket_number, name='valid_file_name'),
 
+    url(r'^unit_test/$', views.unit_test, name='unit_test'),
+
 ]

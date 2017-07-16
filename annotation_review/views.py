@@ -27,6 +27,7 @@ def index(request):
     }
     return render(request, 'annotation_review/index.html', context)
 
+
 @login_required()
 def detail(request, annotation_review_id):
     try:
@@ -102,9 +103,10 @@ def start_work(request):
 def continue_work(request):
     work_set_id = request.POST['work_set_id']
     work_set = WorkSet.objects.get(id=work_set_id)
-    sentence_review_list = work_set.reviewsentence_set.all()
-    # sentence_review_list.order_by(sentence_review_index)
-    return HttpResponseRedirect(reverse('annotation_review:detail', args=(1,)))
+    sentence_review_list = work_set.reviewsentence_set.filter(review_sentence_result=0).order_by(
+        "review_sentence_index")
+    return HttpResponseRedirect(
+        reverse('annotation_review:detail', args=(sentence_review_list[0].review_sentence_index,)))
 
 
 @csrf_exempt
@@ -120,3 +122,11 @@ def valid_file_name(request):
 def valid_ticket_number(request):
     ticket = request.POST['ticket_number']
     return HttpResponse('{"valid":true}')
+
+
+def unit_test(request):
+    user = UserInfo.objects.get(email=request.user)
+    language_name = request.POST['language_name']
+    if language_name and language_name < 10:
+        raise Http404("Annotation Review Item does not exist")
+    return HttpResponse('Good')
