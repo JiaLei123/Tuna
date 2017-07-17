@@ -34,8 +34,9 @@ def detail(request, annotation_review_id):
         review_sentence = ReviewSentence.objects.get(pk=annotation_review_id)
         language = Language.objects.get(pk=review_sentence.language).name
         process = review_sentence.review_sentence_index/review_sentence.work_set_count
+        work_set = WorkSet.objects.get(pk=review_sentence.work_set_id)
         context = {
-            # "work_set": work_set
+            "work_set": work_set,
             "review_sentence": review_sentence,
             "language": language,
             'process': process
@@ -113,8 +114,12 @@ def continue_work(request):
         reverse('annotation_review:detail', args=(sentence_review_list[0].review_sentence_index,)))
 
 @login_required()
-def show_summary(request):
+def show_summary(request, work_set_id):
     user = UserInfo.objects.get(email=request.user)
+    work_set = WorkSet.objects.get(pk=work_set_id)
+    review_sentence_list = work_set.reviewsentence_set.all()
+    
+
 
 
 
@@ -134,7 +139,7 @@ def valid_ticket_number(request):
     ticket = request.POST['ticket_number']
     return HttpResponse('{"valid":true}')
 
-
+@login_required()
 def unit_test(request):
     user = UserInfo.objects.get(email=request.user)
     language_name = request.POST['language_name']
