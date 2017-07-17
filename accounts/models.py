@@ -26,9 +26,11 @@ class RoleList(models.Model):
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, username, password=None):
+    def create_user(self, email, username=None, password=None):
         if not email:
             raise ValueError('Users must have an email address')
+        if username:
+            username = email
         user = self.model(
             email=self.normalize_email(email),
             username=username
@@ -38,7 +40,8 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, username, password):
+    def create_superuser(self, email, username=None, password=None):
+        username = email
         user = self.create_user(email,
                                 username=username,
                                 password=password,

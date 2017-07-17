@@ -17,6 +17,7 @@ urlpatterns = [
 
     url(r'^start_work/$', views.start_work, name='start_work'),
 
+    url(r'^show_summary/$', views.show_summary, name='show_summary'),
     # ajax data valid function
     url(r'^valid_file_name/$', views.valid_file_name, name='valid_file_name'),
     url(r'^valid_ticket_number/$', views.valid_ticket_number, name='valid_file_name'),

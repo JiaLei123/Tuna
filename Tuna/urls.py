@@ -18,6 +18,7 @@ from django.contrib import admin
 import views
 
 urlpatterns = [
+    url(r'^admin/', admin.site.urls),
     url(r'^$', views.index, name='index'),
     url(r'^accounts/', include('accounts.urls', namespace="accounts")),
     url(r'^annotation_review/', include('annotation_review.urls', namespace="annotation_review")),

@@ -9,7 +9,7 @@ from .models import ReviewSentence, Language, TaskType, WorkSet
 # from accounts.permission import permission_verify
 from accounts.models import UserInfo
 from django.views.decorators.csrf import csrf_exempt
-from lib import file_accessor1
+from lib import file_accessor
 import os
 
 
@@ -32,37 +32,37 @@ def index(request):
 def detail(request, annotation_review_id):
     try:
         review_sentence = ReviewSentence.objects.get(pk=annotation_review_id)
-        # review_sentence = ReviewSentence()
-        # review_sentence.review_sentence_index = 1
-        # review_sentence.review_sentence_text = "This is just example"
-        # review_sentence.work_set_count = 200
-        # review_sentence.id = 1
-        # review_sentence.language = "zh-cn"
-
+        language = Language.objects.get(pk=review_sentence.language).name
+        process = review_sentence.review_sentence_index/review_sentence.work_set_count
+        context = {
+            # "work_set": work_set
+            "review_sentence": review_sentence,
+            "language": language,
+            'process': process
+        }
     except ReviewSentence.DoesNotExist:
         raise Http404("Annotation Review Item does not exist")
-    return render(request, 'annotation_review/detail.html', {'review_sentence': review_sentence})
+    return render(request, 'annotation_review/detail.html', context)
 
 
 @login_required()
 def vote(request, annotation_review_id):
-    result = request.POST['optionsRadios']
-    p = get_object_or_404(ReviewSentence, pk=annotation_review_id)
+    review_sentence = get_object_or_404(ReviewSentence, pk=annotation_review_id)
     try:
         result = request.POST['optionsRadios']
-        p.annotation_review_result = result
+        review_sentence.review_sentence_result = int(result)
     except:
         # Redisplay the question voting form.
         return render(request, 'annotation_review/detail.html', {
-            'question': p,
+            'review_sentence': review_sentence,
             'error_message': "You didn't select a choice.",
         })
     else:
-        p.save()
+        review_sentence.save()
         # Always return an HttpResponseRedirect after successfully dealing
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
-        return HttpResponseRedirect(reverse('annotation_review:detail', args=(p.id + 1,)))
+        return HttpResponseRedirect(reverse('annotation_review:detail', args=(review_sentence.id + 1,)))
 
 
 @login_required()
@@ -86,7 +86,7 @@ def start_work(request):
     work_set = WorkSet(work_set_name=work_set_name, is_complete=False, ticket_number=ticket_number, task_type=task_type,
                        user=user)
     work_set.save()
-    accessor = file_accessor1.FileAccessor(file_path)
+    accessor = file_accessor.FileAccessor(file_path)
     sentence_list = accessor.read_file()
     if sentence_list:
         i = 1
@@ -96,7 +96,11 @@ def start_work(request):
                                              work_set_count=len(sentence_list), work_set=work_set)
             review_sentence.save()
             i = i + 1
-    return HttpResponseRedirect(reverse('annotation_review:detail', args=(1,)))
+
+    # get the first review sentence for this work set
+    review_sentence_start = ReviewSentence.objects.fileter(work_set=work_set, review_sentence_index=1)
+
+    return HttpResponseRedirect(reverse('annotation_review:detail', args=(review_sentence_start.id,)))
 
 
 @login_required()
@@ -108,11 +112,18 @@ def continue_work(request):
     return HttpResponseRedirect(
         reverse('annotation_review:detail', args=(sentence_review_list[0].review_sentence_index,)))
 
+@login_required()
+def show_summary(request):
+    user = UserInfo.objects.get(email=request.user)
+
+
+
+
 
 @csrf_exempt
 def valid_file_name(request):
     file_name = request.POST['file_name']
-    accessor = file_accessor1.FileAccessor(file_name)
+    accessor = file_accessor.FileAccessor(file_name)
     valid = accessor.file_exit_valid()
     response = '{"valid":%s}' % valid
     return HttpResponse(response.lower())

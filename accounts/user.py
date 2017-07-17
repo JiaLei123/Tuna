@@ -39,3 +39,14 @@ def login(request):
 def logout(request):
     auth.logout(request)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+@login_required()
+# @permission_verify()
+def user_list(request):
+    temp_name = "accounts/accounts-header.html"
+    all_user = get_user_model().objects.all()
+    kwargs = {
+        'temp_name': temp_name,
+        'all_user':  all_user,
+    }
+    return render(request, 'accounts/user_list.html', kwargs)
