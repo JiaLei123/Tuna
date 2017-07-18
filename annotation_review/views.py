@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
@@ -11,6 +12,9 @@ from accounts.models import UserInfo
 from django.views.decorators.csrf import csrf_exempt
 from lib import file_accessor
 import os
+import json
+import sys
+
 
 
 @login_required()
@@ -117,12 +121,54 @@ def continue_work(request):
 def show_summary(request, work_set_id):
     user = UserInfo.objects.get(email=request.user)
     work_set = WorkSet.objects.get(pk=work_set_id)
+    context = {
+        "work_set": work_set,
+    }
+    return render(request, 'annotation_review/result.html', context)
+
+result_mapping = {
+    0: "Not Reivew",
+    1: "Correct",
+    2: "Incorrect",
+    3: "Ambiguous",
+    4: "Skip"
+}
+
+@login_required()
+def show_review_summary(request, work_set_id):
+    reload(sys)
+    sys.setdefaultencoding('utf8')
+
+    user = UserInfo.objects.get(email=request.user)
+    work_set = WorkSet.objects.get(pk=work_set_id)
     review_sentence_list = work_set.reviewsentence_set.all()
-    
 
+    json_result_list = dict()
 
+    result_list = list()
 
+    for review_sentence in review_sentence_list:
+        review_sentence_split = review_sentence.review_sentence_text.split('\t')
+        sentence_json = dict()
+        sentence_json["sentence_id"] = review_sentence.review_sentence_index
+        sentence_json["review_sentence_parse_type"] = review_sentence_split[0]
+        review_sentence_mention = review_sentence_split[1].encode('utf-8')
+        review_sentence_mention = review_sentence_mention.replace(u'<', '&lt').replace(u'>', '&gt')
+        sentence_json["review_sentence_mentions"] = review_sentence_mention
+        sentence_json["result"] = result_mapping[review_sentence.review_sentence_result]
+        if review_sentence.correct_sentence_text:
+            correct_sentence_split = review_sentence.correct_sentence_text.split('\t')
+            sentence_json["correct_sentence_parse_type"] = correct_sentence_split[0]
+            correct_sentence_mention = review_sentence_split[1].encode('utf-8')
+            correct_sentence_mention = correct_sentence_mention.replace(u'<', '&lt').replace(u'>', '&gt')
+            sentence_json["correct_sentence_mentions"] = correct_sentence_mention
+        result_list.append(sentence_json)
 
+    json_result_list["total"] = len(review_sentence_list)
+    json_result_list["rows"] = result_list
+
+    result = json.dumps(json_result_list)
+    return HttpResponse(result)
 
 
 @csrf_exempt

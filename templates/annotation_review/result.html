@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container">
+    <table class="table table-condensed"
+           style="word-break:break-all; word-wrap:break-all;"
+           id="table"
+           data-toolbar="#toolbar"
+           data-search="true"
+           data-show-refresh="true"
+           data-show-toggle="true"
+           data-show-export="true"
+           data-detail-view="false"
+           data-locale = "zh-CN"
+           data-minimum-count-columns="2"
+           data-show-pagination-switch="true"
+           data-pagination="false"
+           data-id-field="id"
+           data-page-list="[10, 25, 50, 100, ALL]"
+           data-show-footer="true"
+           data-side-pagination="server"
+           data-url={% url 'annotation_review:show_review_summary' work_set.id%}
+           data-response-handler="responseHandler"
+           data-row-style="rowStyle"
+           data-cell-style= "cellStyle">
+    </table>
+    <div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        initTable();
+    });
+
+    var $table = $('#table'), 
+    selections = [];
+    
+    function initTable() {
+        $table.bootstrapTable({
+            height: getHeight(),
+            columns: [
+                [
+                    {
+                        title: 'ID',
+                        field: 'sentence_id',
+                        rowspan: 2,
+                        align: 'center',
+                        valign: 'middle',
+                        sortable: true,
+                        footerFormatter: totalTextFormatter,
+                        
+                    }, {
+                        title: 'Annotation',
+                        colspan: 2,
+                        align: 'center',
+                    },
+                    {
+                        title: 'Result',
+                        field: 'result',
+                        rowspan: 2,
+                        align: 'center',
+                        valign: 'middle',
+                        sortable: true,
+                        footerFormatter: totalTextFormatter,
+                    },
+                    {
+                        title: 'Correct Annotation',
+                        colspan: 2,
+                        align: 'center',
+                    },
+                     {
+                        field: 'operate',
+                        title: 'Operate',
+                        align: 'center',
+                        valign: 'middle',
+                        rowspan: 2,
+                        events: operateEvents,
+                        formatter: operateFormatter,
+                    }
+
+                ],
+                [
+                    {
+                        field: 'review_sentence_parse_type',
+                        title: 'Parse Types',
+                        sortable: false,
+                        editable: false,
+                        footerFormatter: totalNameFormatter,
+                        align: 'center',
+                    }, {
+                        field: 'review_sentence_mentions',
+                        title: 'Sentence',
+                        sortable: false,
+                        align: 'center',
+                        footerFormatter: totalNameFormatter,
+                    }, {
+                        field: 'correct_sentence_parse_type',
+                        title: 'Parse Types',
+                        sortable: false,
+                        footerFormatter: totalNameFormatter,
+                        align: 'center',
+                    }, {
+                        field: 'correct_sentence_mentions',
+                        title: 'Sentence',
+                        sortable: false,
+                        align: 'center',
+                        footerFormatter: totalNameFormatter,
+                    }
+                ]
+            ]
+        });
+        // sometimes footer render error.
+        setTimeout(function () {
+            $table.bootstrapTable('resetView');
+        }, 200);
+        $(window).resize(function () {
+            $table.bootstrapTable('resetView', {
+                height: getHeight()
+            });
+        });
+    }
+
+
+    function responseHandler(res) {
+        return res;
+    }
+
+    function getHeight() {
+        return $(window).height() - $('h1').outerHeight(true);
+    }
+
+    function totalTextFormatter(data) {
+        return 'Total';
+    }
+
+    function totalNameFormatter(data) {
+        return data.length;
+    }
+
+    function operateFormatter(value, row, index) {
+        return [
+            '<a class="like btn btn-success" href="javascript:void(0)" title="Edit">',
+            '</a>  '
+        ].join('');
+    }
+    window.operateEvents = {
+        'click .like': function (e, value, row, index) {
+            alert('You click like action, row: ' + JSON.stringify(row));
+        }
+    };
+
+    function rowStyle(row, index) {
+        var classes = ['active', 'success', 'info', 'warning', 'danger'];
+        if (index % 2 === 0 && index / 2 < classes.length) {
+            return {
+                classes: classes[index % 2]
+            };
+        }
+        return {};
+    }
+
+
+</script>
+{% endblock %}

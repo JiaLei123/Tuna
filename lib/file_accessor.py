@@ -16,7 +16,7 @@ class FileAccessor:
     def read_file(self):
         try:
             with open(self.file_path, 'r') as open_file:
-                lines = [line.strip() for line in open_file.readlines()]
+                lines = [line.strip().encode('utf-8') for line in open_file.readlines()]
                 return lines
         except:
             raise Exception('invalid file')
