@@ -30,8 +30,22 @@ body {
     float:right;
 }
 
-.right{
+.browse-horizontal-cent {
+    font-family: "Roboto", Corbel, Avenir, "Lucida Grande", "Lucida Sans", sans-serif;
+    font-size: 14px;
+    font-size: 1.4rem;
+    font-weight: 700;
+    /*border-top: 1px solid #CFE3DC;*/
+    /*border-bottom: 1px solid #CFE3DC;*/
+    padding: 20px 0;
+    margin-top: 2em;
+}
 
+.right{
+    float:right;
+}
+.left{
+    float:left;
 }
 
 div {

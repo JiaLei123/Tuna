@@ -2,30 +2,65 @@
 {% block content %}
 
 <div class="container">
-    <table class="table table-condensed"
-           style="word-break:break-all; word-wrap:break-all;"
-           id="table"
-           data-toolbar="#toolbar"
-           data-search="true"
-           data-show-refresh="true"
-           data-show-toggle="true"
-           data-show-export="true"
-           data-detail-view="false"
-           data-locale = "zh-CN"
-           data-minimum-count-columns="2"
-           data-show-pagination-switch="true"
-           data-pagination="false"
-           data-id-field="id"
-           data-page-list="[10, 25, 50, 100, ALL]"
-           data-show-footer="true"
-           data-side-pagination="server"
-           data-url={% url 'annotation_review:show_review_summary' work_set.id%}
-           data-response-handler="responseHandler"
-           data-row-style="rowStyle"
-           data-cell-style= "cellStyle">
-    </table>
-    <div>
+    <div class="panel panel-success">
+        <div class="panel-heading">
+            Annotation Review Summary
+        </div>
+        <div class="panel-body">
+            <table class="table table-condensed"
+                style="word-break:break-all; word-wrap:break-all;"
+                id="table"
+                data-toolbar="#toolbar"
+                data-search="true"
+                data-show-refresh="true"
+                data-show-toggle="true"
+                data-show-export="true"
+                data-detail-view="false"
+                data-locale = "zh-CN"
+                data-minimum-count-columns="2"
+                data-show-pagination-switch="true"
+                data-pagination="false"
+                data-id-field="id"
+                data-page-list="[10, 25, 50, 100, ALL]"
+                data-show-footer="false"
+                data-side-pagination="server"
+                data-url={% url 'annotation_review:show_review_summary' work_set.id%}
+                data-response-handler="responseHandler"
+                data-row-style="rowStyle"
+                data-cell-style= "cellStyle">
+            </table>
+        </div>
     </div>
+    <form class="form-horizontal">
+        <div class="panel panel-warning">
+            <div class="panel-heading">
+                    Error Pattern
+            </div>
+            <div class="panel-body">
+            </div>
+        </div>
+
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                Review Statistics
+            </div>
+            <div class="panel-body">
+                <h4>Review Statistics Accuracy: 80.23% Time Used: 1 Hours 30 Mintues Annotation item reviewed: 200 </h4>
+            </div>
+        </div>
+
+        <div class="browse-horizontal-cent">
+            <div class="right">
+                <a class="btn btn-success" href="{% url 'annotation_review:previous_work' work_set.id%}" role="button">Previous</a>
+            </div>
+            <div class="left">
+                <input type="submit" class="btn btn-primary" value="Finish">
+            </div>
+        </div>
+
+    </form>
+    
+
 </div>
 
 <script>

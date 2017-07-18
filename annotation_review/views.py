@@ -118,6 +118,14 @@ def continue_work(request):
         reverse('annotation_review:detail', args=(sentence_review_list[0].review_sentence_index,)))
 
 @login_required()
+def previous_work(request, work_set_id):
+    work_set = WorkSet.objects.get(id=work_set_id)
+    sentence_review_list = work_set.reviewsentence_set.filter(review_sentence_result=0).order_by(
+        "review_sentence_index")
+    return HttpResponseRedirect(
+        reverse('annotation_review:detail', args=(sentence_review_list[0].review_sentence_index,)))
+
+@login_required()
 def show_summary(request, work_set_id):
     user = UserInfo.objects.get(email=request.user)
     work_set = WorkSet.objects.get(pk=work_set_id)

@@ -26,6 +26,7 @@ class WorkSet(models.Model):
     work_set_name = models.CharField('work set name, it equal to the task file name', max_length=255)
     is_complete = models.BooleanField('identify if work set is completely', default=False)
     ticket_number = models.CharField('ticket number which this work set belong to', max_length=30)
+
     # create time, last modify time
     created_at = models.DateTimeField('work set create datetime', default=timezone.now)
     update_at = models.DateTimeField('work set last modify datetime', auto_now=True)
@@ -42,6 +43,17 @@ class ReviewSentence(models.Model):
     sentence_text = models.CharField('review sentence origin text without annotation info', max_length=1000)
     language = models.CharField('the language this sentence belong to', max_length=20)
     work_set_count = models.IntegerField('the total number of sentence in work set')
+    # create time, last modify time
+    created_at = models.DateTimeField('review sentence create datetime', default=timezone.now)
+    update_at = models.DateTimeField('review sentence last modify datetime', auto_now=True)
+    # Foreign key
+    work_set = models.ForeignKey(WorkSet)
+
+
+class ErrorPattern(models.Model):
+    error_pattern_text = models.CharField('error pattern description', max_length=500)
+    error_pattern_status = models.IntegerField('identify it the error pattern been marked, it should be 0 ,1 ,2')
+    error_pattern_comments= models.CharField('the comments for the error pattern', max_length=500)
     # create time, last modify time
     created_at = models.DateTimeField('review sentence create datetime', default=timezone.now)
     update_at = models.DateTimeField('review sentence last modify datetime', auto_now=True)

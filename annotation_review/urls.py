@@ -15,6 +15,8 @@ urlpatterns = [
     # ex: /annotation_review/continue/
     url(r'^continue_work/$', views.continue_work, name='continue_work'),
 
+    url(r'^(?P<work_set_id>[0-9]+)/previous_work/$', views.previous_work, name='previous_work'),
+
     url(r'^start_work/$', views.start_work, name='start_work'),
 
     url(r'^(?P<work_set_id>[0-9]+)/show_summary/$', views.show_summary, name='show_summary'),
