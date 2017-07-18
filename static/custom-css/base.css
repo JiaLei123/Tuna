@@ -14,6 +14,10 @@ body {
   background-color: #f5f5f5;
 }
 
+.modal-dialog-width{
+    width: 700px;
+}
+
 .browse-horizontal {
     font-family: "Roboto", Corbel, Avenir, "Lucida Grande", "Lucida Sans", sans-serif;
     font-size: 14px;

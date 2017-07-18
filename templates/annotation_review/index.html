@@ -68,7 +68,7 @@
         </div>
 
         <div class="modal fade" id="continue_review_Modal" tabindex="-1" role="dialog" aria-labelledby="continue_review_ModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog-width modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
@@ -77,8 +77,8 @@
                     <form class="form-horizontal" id="continue_review_form" role="form" action="{% url 'annotation_review:continue_work' %}" method="POST">
                         {% csrf_token %}
                         <div class="form-group">
-                            <label for="work_set_select" class="col-sm-3 control-label">Task Name</label>
-                            <div class="col-sm-8">
+                            <label for="work_set_select" class="col-sm-2 control-label">Task Name</label>
+                            <div class="col-sm-10">
                                 <select id="work_set_select" name="work_set_id">
                                     {% for work_set in work_set_list %}
                                         <option value="{{work_set.id}}">{{work_set.work_set_name}}</option>
