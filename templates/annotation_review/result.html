@@ -35,7 +35,7 @@
             <div class="panel-heading">
                 Error Pattern
             </div>
-            <div class="panel-body form-group" id="error-pattern-table">
+            <div class="panel-body" id="error-pattern-table">
                 <input type="text" hidden="hidden" name="work_set_id" value="{{ work_set.id }}">
                 <table class="table">
                     <tbody>
@@ -44,7 +44,7 @@
                                 <th scope="row"> {{ error_pattern.id }}</th>
                                 <td>{{ error_pattern.error_pattern_text }}</td>
                                 <td>
-                                    <div class="radio form-group">
+                                    <div class="form-group radio">
                                         <label>
                                             <input type="radio" name="error_pattern_status_{{ forloop.counter }}" value="1">
                                             Fit
@@ -57,14 +57,15 @@
                                 </td>
                                 <td>
                                     <div class="form-group form-inline" id="error_pattern_comments_block_{{ forloop.counter }}">
-                                        <label for="error_pattern_comments_id" class="control-label">Comment</label>
-                                        <input type="text" class="form-control" id="error_pattern_comments_id" name="error_pattern_comments" value="{{ error_pattern.error_pattern_comments }}">
+                                        <label for="error_pattern_comments_id_{{ forloop.counter }}" class="control-label">Comment</label>
+                                        <input type="text" class="form-control" style="width: 70%; margin-left: 3px; margin-right: 3px;" id="error_pattern_comments_id_{{ forloop.counter }}" name="error_pattern_comments_{{ forloop.counter }}" value="{{ error_pattern.error_pattern_comments }}">
                                     </div>
                                 </td>
                             </tr>
                         {% endfor %}     
                     </tbody>
                 </table>
+                <p id="error_pattern_count" hidden="hidden">{{error_pattern_list|length}}</p>
             </div>
         </div>
 
@@ -82,12 +83,28 @@
                 <a class="btn btn-success" href="{% url 'annotation_review:previous_work' work_set.id%}" role="button">Previous</a>
             </div>
             <div class="right">
-                <input type="submit" class="btn btn-success" value="Finish">
+                <button id="submit_btn" class="btn btn-success">Finish</button>
+                <input hidden="hidden" id="submit" type="submit" class="btn btn-success" value="Finish">
             </div>
         </div>
-
     </form>
-    
+
+    <div class="modal fade" id="start_task_Modal" tabindex="-1" role="dialog" aria-labelledby="start_task_ModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                    <h4 class="modal-title" id="start_task_ModalLabel">Start Task</h4>
+                </div>
+                <div class="modal-body">
+				There is Sentence not been reviewed
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+			    </div>
+            </div>
+        </div>
+    </div>
 
 </div>
 
@@ -226,6 +243,25 @@
 
 
     function data_validate() {
+
+        $("#submit_btn").on("click", function(){
+
+            var reviewed = true
+            var v
+            $("#table tr td:eq(3)").each( function(){
+                if ($(this).text() == "Not Reivew"){
+                     v += $(this).text()+" ";
+                }
+            })
+
+            console.log(v)
+
+            if(reviewed)
+                $("#submit").submit();
+            else 
+                 $("#start_task_Modal").dialog( "open" );;
+        });
+        
         $('#finish_task_form').bootstrapValidator({
             message: 'This value is not valid',
             feedbackIcons: {
@@ -241,27 +277,33 @@
                         }
                     }
                 },
-                error_pattern_comments: {
-                    enabled: false,
-                    validators: {
-                        notEmpty: {
-                            message: 'The country is required and cannot be empty'
-                        }
-                    }
-                },
             }
         });
 
-         $('input[name="error_pattern_status"]').on('change', function() {
-            var bootstrapValidator = $('#finish_task_form').data('bootstrapValidator'),
-            pattern_fit = ($(this).val() == '1');
+        
+        var count = new Number($('#error_pattern_count').text())
+        for (var i=1;i<=count;i++){
 
-            pattern_fit ? $('#error_pattern_comments_block').find('.form-control').removeAttr('disabled')
-                        : $('#error_pattern_comments_block').find('.form-control').attr('disabled', 'disabled');
+            $('#finish_task_form').bootstrapValidator('addField', 'error_pattern_comments_'+ i.toString(), {  
+                validators: {  
+                    notEmpty: {  
+                        message: 'Comments should not be empty'  
+                    }  
+                }  
+            });  
 
-            bootstrapValidator.enableFieldValidators('error_pattern_comments', pattern_fit)
-                           
-        });
+
+            $('input[name="error_pattern_status_'+ i.toString() +'"]').on('change', {key:i}, function(event) {
+                var bootstrapValidator = $('#finish_task_form').data('bootstrapValidator'),
+                pattern_fit = ($(this).val() == 2);
+
+                bootstrapValidator.enableFieldValidators('error_pattern_comments_' + event.data.key.toString(), pattern_fit)
+
+                pattern_fit ? $('#error_pattern_comments_block_' + event.data.key.toString()).find('.form-control').removeAttr('disabled')
+                            : $('#error_pattern_comments_block_' + event.data.key.toString()).find('.form-control').attr('disabled', 'disabled');
+           
+            });
+        }
     }
 
 
