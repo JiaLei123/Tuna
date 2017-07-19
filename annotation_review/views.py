@@ -16,6 +16,17 @@ import json
 import sys
 
 
+result_mapping = {
+    0: "Not Reivew",
+    1: "Correct",
+    2: "Incorrect",
+    3: "Ambiguous",
+    4: "Skip"
+}
+
+
+# first index page
+
 
 @login_required()
 # @permission_verify()
@@ -30,49 +41,6 @@ def index(request):
         'work_set_list': work_set_list
     }
     return render(request, 'annotation_review/index.html', context)
-
-
-@login_required()
-def detail(request, annotation_review_id):
-    try:
-        review_sentence = ReviewSentence.objects.get(pk=annotation_review_id)
-        language = Language.objects.get(pk=review_sentence.language).name
-        process = review_sentence.review_sentence_index/review_sentence.work_set_count
-        work_set = WorkSet.objects.get(pk=review_sentence.work_set_id)
-        context = {
-            "work_set": work_set,
-            "review_sentence": review_sentence,
-            "language": language,
-            'process': process
-        }
-    except ReviewSentence.DoesNotExist:
-        raise Http404("Annotation Review Item does not exist")
-    return render(request, 'annotation_review/detail.html', context)
-
-
-@login_required()
-def vote(request, annotation_review_id):
-    review_sentence = get_object_or_404(ReviewSentence, pk=annotation_review_id)
-    try:
-        result = request.POST['optionsRadios']
-        review_sentence.review_sentence_result = int(result)
-    except:
-        # Redisplay the question voting form.
-        return render(request, 'annotation_review/detail.html', {
-            'review_sentence': review_sentence,
-            'error_message': "You didn't select a choice.",
-        })
-    else:
-        review_sentence.save()
-        # Always return an HttpResponseRedirect after successfully dealing
-        # with POST data. This prevents data from being posted twice if a
-        # user hits the Back button.
-        return HttpResponseRedirect(reverse('annotation_review:detail', args=(review_sentence.id + 1,)))
-
-
-@login_required()
-def skip(request, annotation_review_id):
-    return HttpResponseRedirect(reverse('annotation_review:detail', args=(1,)))
 
 
 @login_required()
@@ -109,22 +77,6 @@ def start_work(request):
 
 
 @login_required()
-def submit_work(request):
-    work_set_id = request.POST['work_set_id']
-
-    return HttpResponseRedirect(reverse('annotation_review:finish_work', args=(work_set_id,)))
-
-@login_required()
-def finish_work(request, work_set_id):
-    work_set_id = request.POST['work_set_id']
-    work_set = get_object_or_404(WorkSet, pk=work_set_id)
-    context = {
-        "work_set": work_set,
-    }
-    return render(request, 'annotation_review/complete.html', context)
-
-
-@login_required()
 def continue_work(request):
     work_set_id = request.POST['work_set_id']
     work_set = WorkSet.objects.get(id=work_set_id)
@@ -133,13 +85,68 @@ def continue_work(request):
     return HttpResponseRedirect(
         reverse('annotation_review:detail', args=(sentence_review_list[0].review_sentence_index,)))
 
+
+# do annotation review page
+
+
 @login_required()
-def previous_work(request, work_set_id):
-    work_set = WorkSet.objects.get(id=work_set_id)
-    sentence_review_list = work_set.reviewsentence_set.filter(review_sentence_result=0).order_by(
-        "review_sentence_index")
-    return HttpResponseRedirect(
-        reverse('annotation_review:detail', args=(sentence_review_list[0].review_sentence_index,)))
+def detail(request, annotation_review_id):
+    """
+    after check start work or continue work button, the will redirect to detail page then will invoke this function
+    :param request:
+    :param annotation_review_id:
+    :return:
+    """
+    try:
+        review_sentence = ReviewSentence.objects.get(pk=annotation_review_id)
+        language = Language.objects.get(pk=review_sentence.language).name
+        process = review_sentence.review_sentence_index/review_sentence.work_set_count
+        work_set = WorkSet.objects.get(pk=review_sentence.work_set_id)
+        context = {
+            "work_set": work_set,
+            "review_sentence": review_sentence,
+            "language": language,
+            'process': process
+        }
+    except ReviewSentence.DoesNotExist:
+        raise Http404("Annotation Review Item does not exist")
+    return render(request, 'annotation_review/detail.html', context)
+
+
+@login_required()
+def vote(request, annotation_review_id):
+    """
+    submit the each annotation sentence review result
+    :param request:
+    :param annotation_review_id:
+    :return:
+    """
+    review_sentence = get_object_or_404(ReviewSentence, pk=annotation_review_id)
+    try:
+        result = request.POST['optionsRadios']
+        review_sentence.review_sentence_result = int(result)
+    except:
+        # Redisplay the question voting form.
+        return render(request, 'annotation_review/detail.html', {
+            'review_sentence': review_sentence,
+            'error_message': "You didn't select a choice.",
+        })
+    else:
+        review_sentence.save()
+        # Always return an HttpResponseRedirect after successfully dealing
+        # with POST data. This prevents data from being posted twice if a
+        # user hits the Back button.
+
+        # TODO: should check if it is the last sentence
+        return HttpResponseRedirect(reverse('annotation_review:detail', args=(review_sentence.id + 1,)))
+
+
+@login_required()
+def skip(request, annotation_review_id):
+    return HttpResponseRedirect(reverse('annotation_review:detail', args=(1,)))
+
+
+# annotation review summary page
 
 
 @login_required()
@@ -165,16 +172,9 @@ def show_summary(request, work_set_id):
 
     return render(request, 'annotation_review/result.html', context)
 
-result_mapping = {
-    0: "Not Reivew",
-    1: "Correct",
-    2: "Incorrect",
-    3: "Ambiguous",
-    4: "Skip"
-}
 
 @login_required()
-def show_review_summary(request, work_set_id):
+def query_review_sentence_table(request, work_set_id):
     reload(sys)
     sys.setdefaultencoding('utf8')
 
@@ -210,6 +210,38 @@ def show_review_summary(request, work_set_id):
     return HttpResponse(result)
 
 
+@login_required()
+def previous_work(request, work_set_id):
+    work_set = WorkSet.objects.get(id=work_set_id)
+    sentence_review_list = work_set.reviewsentence_set.filter(review_sentence_result=0).order_by(
+        "review_sentence_index")
+    return HttpResponseRedirect(
+        reverse('annotation_review:detail', args=(sentence_review_list[0].review_sentence_index,)))
+
+
+@login_required()
+def submit_work(request):
+    """
+    submit work set to finish the annotation review for currently work set
+    :param request:
+    :return:
+    """
+    work_set_id = request.POST['work_set_id']
+    return HttpResponseRedirect(reverse('annotation_review:finish_work', args=(work_set_id,)))
+
+
+@login_required()
+def finish_work(request, work_set_id):
+    work_set_id = request.POST['work_set_id']
+    work_set = get_object_or_404(WorkSet, pk=work_set_id)
+    context = {
+        "work_set": work_set,
+    }
+    return render(request, 'annotation_review/complete.html', context)
+
+
+# valid function
+
 @csrf_exempt
 def valid_file_name(request):
     file_name = request.POST['file_name']
@@ -223,6 +255,7 @@ def valid_file_name(request):
 def valid_ticket_number(request):
     ticket = request.POST['ticket_number']
     return HttpResponse('{"valid":true}')
+
 
 @login_required()
 def unit_test(request):

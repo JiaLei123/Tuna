@@ -25,7 +25,8 @@ urlpatterns = [
 
     url(r'^(?P<work_set_id>[0-9]+)/show_summary/$', views.show_summary, name='show_summary'),
 
-    url(r'^(?P<work_set_id>[0-9]+)/show_review_summary/$', views.show_review_summary, name='show_review_summary'),
+    url(r'^(?P<work_set_id>[0-9]+)/query_review_sentence_table/$', views.query_review_sentence_table,
+        name='query_review_sentence_table'),
     # ajax data valid function
     url(r'^valid_file_name/$', views.valid_file_name, name='valid_file_name'),
     url(r'^valid_ticket_number/$', views.valid_ticket_number, name='valid_file_name'),
