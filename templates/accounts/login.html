@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base_without_timer.html' %}
 {% block content %}
 <div id="page-content" class="container container-fluid" role="main">
     <div class="col-md-3">
@@ -6,13 +6,9 @@
     <div class="col-md-6">
         <div class="panel-signin login-form">
             <h2>Sign in</h2>
-
             <form class="login-content" role="form" action="{% url 'accounts:login' %}" method="POST">
-
-
                 {% csrf_token %}
                 {% for item in form %}
-
                 <div class="form-inputs panel-signin row">
                     <div class="control-label col-md-2">
                         {{item.label}}
@@ -20,7 +16,6 @@
                     <div class="col-md-5">
                         {{item}}
                     </div>
-
                 </div>
                 <div class="form-inputs panel-signin row">
                     <div class="col-md-2">
@@ -30,7 +25,7 @@
                     </div>
                 </div>
                 {% endfor %}
-
+                
                 <div class="form-actions">
                     <input type="hidden" name="next" value="{{ next }}"/>
                     <input class="btn btn btn-success" name="commit" type="submit" value="Log in">

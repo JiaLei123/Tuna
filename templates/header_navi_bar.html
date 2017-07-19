@@ -1,55 +1,20 @@
-<nav class="navbar navbar-inverse navbar-fluid-top navbar-fixed-top">
-    <div class="container">
-        <div class="navbar-header">
-            <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">Review Tool</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-                <li class="avtive">
-                    <a href="#">Start Review</a>
-                </li>
-                <li class="dropdown">
-                    <a class="dropdown-toggle" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                        Report
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">report</a></li>
-                    </ul>
+{% extends 'header_navi_bar_base.html' %}
+{% block content %}
 
-                </li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-                <li id="working_session_container">
-                    <a href="#">
-                        <span class="glyphicon glyphicon-time"><i class="icon-time icon-white"></i></span>
-                        <span class="timer-value" data-current="1499394188000" data-expiration-modal-body=" <p> Your session is expired. You need to re-login. </p>"
-                              data-expriation-modal-footer = " <a href=&quot;/login&quot; class=&quot;btn btn-success&quot;>Go to login page</a> or
+<li id="working_session_container">
+    <a href="#">
+        <span class="glyphicon glyphicon-time"><i class="icon-time icon-white"></i></span>
+        <span class="timer-value" data-current="1499394188000"
+              data-expiration-modal-body=" <p> Your session is expired. You need to re-login. </p>"
+              data-expriation-modal-footer=" <a href=&quot;/login&quot; class=&quot;btn btn-success&quot;>Go to login page</a> or
                               <a href=&quot;#&quot; data-dismiss=&quot;modal&quot;>Dismiss</a>"
-                              data-expiration-modal-header="Heads up!" data-start="1499394167000" data-warden-session-expires-in="600000">00:05:05</span>
-                        <span class="counter-label"><i class="glyphicon glyphicon-ok-circle icon-white"></i></span>
-                        <span class="counter-value">0</span>
-                        <span class="counter-label"><i class="glyphicon glyphicon-remove-circle icon-white"></i></span>
-                        <span class="counter-value">0</span>
-                    </a>
-                </li>
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                        lei.jia@nuance.com
-                        <b class="caret"></b>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a href="../../accounts/logout">Log out</a> </li>
-                    </ul>
-                </li>
+              data-expiration-modal-header="Heads up!" data-start="1499394167000"
+              data-warden-session-expires-in="600000">00:05:05</span>
+        <span class="counter-label"><i class="glyphicon glyphicon-ok-circle icon-white"></i></span>
+        <span class="counter-value">0</span>
+        <span class="counter-label"><i class="glyphicon glyphicon-remove-circle icon-white"></i></span>
+        <span class="counter-value">0</span>
+    </a>
+</li>
 
-            </ul>
-        </div>
-    </div>
-</nav>
+{% endblock %}

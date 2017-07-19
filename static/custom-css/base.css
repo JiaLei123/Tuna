@@ -35,10 +35,9 @@ body {
     font-size: 14px;
     font-size: 1.4rem;
     font-weight: 700;
-    /*border-top: 1px solid #CFE3DC;*/
-    /*border-bottom: 1px solid #CFE3DC;*/
     padding: 20px 0;
     margin-top: 2em;
+    margin-bottom: 5em
 }
 
 .right{
@@ -48,11 +47,22 @@ body {
     float:left;
 }
 
-div {
-    display: block;
+#error_pattern_comments_id{
+    width: 80%;
+    margin-left: 3px;
+    margin-right: 3px;
 }
 
+#error_pattern_text_id{
+    margin-left: 5px;
+    margin-right: 5px;
+    word-break:break-all; 
+    word-wrap:break-all;
+}
 
+#error-pattern-table{
+    margin-top: -15px;
+}
 
 .container-fluid .login-form,
 .container-fluid .resend-confirmation-instructions,

@@ -31,12 +31,42 @@
             </table>
         </div>
     </div>
-    <form class="form-horizontal">
+    <form class="form-horizontal" id="finish_task_form" role="form" action="{% url 'annotation_review:submit_work' %}">
+        {% csrf_token %}
         <div class="panel panel-warning">
             <div class="panel-heading">
-                    Error Pattern
+                Error Pattern
             </div>
-            <div class="panel-body">
+            <div class="panel-body form-group" id="error-pattern-table">
+                <input type="text" hidden="hidden" name="work_set_id" value="{{ work_set.id }}">
+                <table class="table">
+                    <tbody>
+                        {% for error_pattern in error_pattern_list %}
+                            <tr>
+                                <th scope="row"> {{ error_pattern.id }}</th>
+                                <td>{{ error_pattern.error_pattern_text }}</td>
+                                <td>
+                                    <div class="radio form-group">
+                                        <label>
+                                            <input type="radio" name="error_pattern_status" value="1">
+                                            Fit
+                                        </label>
+                                        <label>
+                                            <input type="radio" name="error_pattern_status" value="2">
+                                            Not Fit
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group form-inline" id="error_pattern_comments_block">
+                                        <label for="error_pattern_comments_id" class="control-label">Comment</label>
+                                        <input type="text" class="form-control" id="error_pattern_comments_id" name="error_pattern_comments" value="{{ error_pattern.error_pattern_comments }}">
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}     
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -50,11 +80,11 @@
         </div>
 
         <div class="browse-horizontal-cent">
-            <div class="right">
+            <div class="left">
                 <a class="btn btn-success" href="{% url 'annotation_review:previous_work' work_set.id%}" role="button">Previous</a>
             </div>
-            <div class="left">
-                <input type="submit" class="btn btn-primary" value="Finish">
+            <div class="right">
+                <input type="submit" class="btn btn-success" value="Finish">
             </div>
         </div>
 
@@ -63,9 +93,10 @@
 
 </div>
 
-<script>
-    $(function () {
+<script >
+    $(document).ready(function() {
         initTable();
+        data_validate();
     });
 
     var $table = $('#table'), 
@@ -193,6 +224,46 @@
             };
         }
         return {};
+    }
+
+
+    function data_validate() {
+        $('#finish_task_form').bootstrapValidator({
+            message: 'This value is not valid',
+            feedbackIcons: {
+                valid: 'glyphicon glyphicon-ok',
+                invalid: 'glyphicon glyphicon-remove',
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            fields: {
+                error_pattern_status: {
+                    validators: {
+                        notEmpty: {
+                            message: 'The selection is required'
+                        }
+                    }
+                },
+                error_pattern_comments: {
+                    enabled: false,
+                    validators: {
+                        notEmpty: {
+                            message: 'The country is required and cannot be empty'
+                        }
+                    }
+                },
+            }
+        });
+
+         $('input[name="error_pattern_status"]').on('change', function() {
+            var bootstrapValidator = $('#finish_task_form').data('bootstrapValidator'),
+            pattern_fit = ($(this).val() == '1');
+
+            pattern_fit ? $('#error_pattern_comments_block').find('.form-control').removeAttr('disabled')
+                        : $('#error_pattern_comments_block').find('.form-control').attr('disabled', 'disabled');
+
+            bootstrapValidator.enableFieldValidators('error_pattern_comments', pattern_fit)
+                           
+        });
     }
 
 

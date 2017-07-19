@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.core.urlresolvers import reverse
-from .models import ReviewSentence, Language, TaskType, WorkSet
+from .models import ReviewSentence, Language, TaskType, WorkSet, ErrorPattern
 # from accounts.permission import permission_verify
 from accounts.models import UserInfo
 from django.views.decorators.csrf import csrf_exempt
@@ -109,6 +109,22 @@ def start_work(request):
 
 
 @login_required()
+def submit_work(request):
+    work_set_id = request.POST['work_set_id']
+
+    return HttpResponseRedirect(reverse('annotation_review:finish_work', args=(work_set_id,)))
+
+@login_required()
+def finish_work(request, work_set_id):
+    work_set_id = request.POST['work_set_id']
+    work_set = get_object_or_404(WorkSet, pk=work_set_id)
+    context = {
+        "work_set": work_set,
+    }
+    return render(request, 'annotation_review/complete.html', context)
+
+
+@login_required()
 def continue_work(request):
     work_set_id = request.POST['work_set_id']
     work_set = WorkSet.objects.get(id=work_set_id)
@@ -125,13 +141,28 @@ def previous_work(request, work_set_id):
     return HttpResponseRedirect(
         reverse('annotation_review:detail', args=(sentence_review_list[0].review_sentence_index,)))
 
+
 @login_required()
 def show_summary(request, work_set_id):
     user = UserInfo.objects.get(email=request.user)
     work_set = WorkSet.objects.get(pk=work_set_id)
+
+    error_pattern_list = ErrorPattern.objects.all()
+    if not error_pattern_list or len(error_pattern_list) < 1:
+        error_pattern1 = ErrorPattern(error_pattern_text="Test error Pattern 退|<unk> 出|<unk> 地|<app> 图|<app>",
+                                      error_pattern_status=0, work_set=work_set)
+        error_pattern1.save()
+        error_pattern2 = ErrorPattern(error_pattern_text="Test error Pattern 酷|<app> 狗|<app>", error_pattern_status=0,
+                                      work_set=work_set)
+        error_pattern2.save()
+
+    error_pattern_list = ErrorPattern.objects.all()
+
     context = {
         "work_set": work_set,
+        "error_pattern_list": error_pattern_list
     }
+
     return render(request, 'annotation_review/result.html', context)
 
 result_mapping = {

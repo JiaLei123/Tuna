@@ -19,6 +19,10 @@ urlpatterns = [
 
     url(r'^start_work/$', views.start_work, name='start_work'),
 
+    url(r'^submit_work/$', views.submit_work, name='submit_work'),
+
+    url(r'^(?P<work_set_id>[0-9]+)/finish_work/$', views.finish_work, name='finish_work'),
+
     url(r'^(?P<work_set_id>[0-9]+)/show_summary/$', views.show_summary, name='show_summary'),
 
     url(r'^(?P<work_set_id>[0-9]+)/show_review_summary/$', views.show_review_summary, name='show_review_summary'),

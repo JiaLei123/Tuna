@@ -1,0 +1,28 @@
+<!--{% load staticfiles %}-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Annotation Review Tool</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    {% include 'link_css.html' %}
+    {% include 'header_script.html' %}
+    {% block self_head_css_js %} {% endblock %}
+
+    <!--<script>-->
+        <!--$(document).ready(function(){-->
+            <!--$('.loading').fadeOut();-->
+        <!--});-->
+    <!--</script>-->
+</head>
+<body class="controller-annotations">
+
+    {% include 'header_navi_bar_without_timer.html' %}
+    {% block content %}{% endblock %}
+    {% include 'footer.html' %}
+
+</body>
+
+
+</html>
