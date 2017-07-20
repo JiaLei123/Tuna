@@ -29,6 +29,7 @@
             </table>
         </div>
     </div>
+
     <form class="form-horizontal" id="finish_task_form" role="form" action="{% url 'annotation_review:submit_work' %}">
         {% csrf_token %}
         <div class="panel panel-warning">
@@ -78,12 +79,18 @@
             </div>
         </div>
 
+        <div class="row">
+            <div class="form-group right">
+                <input style="opacity:0" name="review_sentence_check" type="text" value="{{ work_set.id }}">
+            </div>
+        </div>
+
         <div class="browse-horizontal-cent">
             <div class="left">
                 <a class="btn btn-success" href="{% url 'annotation_review:previous_work' work_set.id%}" role="button">Previous</a>
             </div>
+
             <div class="right">
-                <input hidden="hidden"id="submit_btn" name="review_sentence_check" type="text">
                 <input id="submit" type="submit" class="btn btn-success" value="Finish">
             </div>
         </div>
@@ -224,33 +231,9 @@
     }
 
 
-    function data_validate() {
-
-        $("#submit_btn").on("click", function(){
-
-            var reviewed = true
-            var v
-            $("#table tr td:eq(3)").each( function(){
-                if ($(this).text() == "Not Reivew"){
-                     v += $(this).text()+" ";
-                }
-            })
-
-            console.log(v)
-
-            if(reviewed)
-                $("#submit").submit();
-            else 
-                 $("#start_task_Modal").dialog( "open" );;
-        });
-        
+    function data_validate() {    
         $('#finish_task_form').bootstrapValidator({
             message: 'This value is not valid',
-            feedbackIcons: {
-                valid: 'glyphicon glyphicon-ok',
-                invalid: 'glyphicon glyphicon-remove',
-                validating: 'glyphicon glyphicon-refresh'
-            },
             fields: {
                 error_pattern_status: {
                     validators: {
@@ -260,11 +243,13 @@
                     }
                 },
                 review_sentence_check: {
-                    remote: {
-                        type: 'POST',
-                        url: '/annotation_review/review_sentence_check/',
-                        message: 'There is sentence not been reviewed'
-                    },
+                    validators: {
+                        remote: {
+                            type: 'POST',
+                            url: '/annotation_review/review_sentence_check/',
+                            message: 'There is sentence not been reviewed \n Please go back to periour view to do annotation review'
+                        }
+                    }
                 }
             }
         });

@@ -56,6 +56,14 @@ def start_work(request):
     file_path = request.POST['file_name']
     ticket_number = request.POST['ticket_number']
     work_set_name = os.path.basename(file_path)
+
+    try:
+        work_set_db = WorkSet.objects.get(work_set_name=work_set_name)
+    except WorkSet.DoesNotExist:
+        pass
+    else:
+        return HttpResponseRedirect(reverse('annotation_review:error'))
+
     work_set = WorkSet(work_set_name=work_set_name, is_complete=False, ticket_number=ticket_number, task_type=task_type,
                        user=user)
     work_set.save()
@@ -71,7 +79,7 @@ def start_work(request):
             i = i + 1
 
     # get the first review sentence for this work set
-    review_sentence_start = ReviewSentence.objects.fileter(work_set=work_set, review_sentence_index=1)
+    review_sentence_start = ReviewSentence.objects.filter(work_set=work_set, review_sentence_index=1).values()
 
     return HttpResponseRedirect(reverse('annotation_review:detail', args=(review_sentence_start.id,)))
 
@@ -223,6 +231,9 @@ def previous_work(request, work_set_id):
 def submit_work(request):
     """
     submit work set to finish the annotation review for currently work set
+    To finish the work it need:
+    1. Save the error pattern
+    2  change the work set status to finish status
     :param request:
     :return:
     """
@@ -243,6 +254,11 @@ def finish_work(request, work_set_id):
 
 # Fifth Edit page
 
+
+# Sixth Error Page
+def error_page(request):
+    return render(request, 'annotation_review/error.html')
+
 # Ajax data valid function
 
 @csrf_exempt
@@ -250,6 +266,7 @@ def valid_file_name(request):
     file_name = request.POST['file_name']
     accessor = file_accessor.FileAccessor(file_name)
     valid = accessor.file_exit_valid()
+
     response = '{"valid":%s}' % valid
     return HttpResponse(response.lower())
 
@@ -258,6 +275,20 @@ def valid_file_name(request):
 def valid_ticket_number(request):
     ticket = request.POST['ticket_number']
     return HttpResponse('{"valid":true}')
+
+
+@csrf_exempt
+def review_sentence_check(request):
+    work_set_id = request.POST['review_sentence_check']
+    work_set = WorkSet.objects.get(pk=work_set_id)
+    review_sentence_list = work_set.reviewsentence_set.all()
+    valid = True
+    for x in review_sentence_list:
+        if x.review_sentence_result == 0:
+            valid = False
+            break
+    response = '{"valid":%s}' % valid
+    return HttpResponse(response.lower())
 
 
 @login_required()

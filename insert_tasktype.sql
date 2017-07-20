@@ -1,0 +1,1 @@
+INSERT INTO `annotation_review`.`annotation_review_tasktype` (`id`, `name`, `created_at`, `update_at`) VALUES ('1', 'Annotation Review', '2013-05-29 17:23:38', '2013-05-29 17:23:38');

@@ -35,10 +35,13 @@ urlpatterns = [
     # Forth Finish page ################################################################
     url(r'^(?P<work_set_id>[0-9]+)/finish_work/$', views.finish_work, name='finish_work'),
 
+    # Sixth Error Page
+    url(r'^error_page/$', views.error_page, name='error_page'),
 
     # Ajax data valid function ##########################################################
     url(r'^valid_file_name/$', views.valid_file_name, name='valid_file_name'),
     url(r'^valid_ticket_number/$', views.valid_ticket_number, name='valid_file_name'),
+    url(r'^review_sentence_check/$', views.review_sentence_check, name='review_sentence_check'),
 
     url(r'^unit_test/$', views.unit_test, name='unit_test'),
 
