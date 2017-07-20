@@ -83,29 +83,11 @@
                 <a class="btn btn-success" href="{% url 'annotation_review:previous_work' work_set.id%}" role="button">Previous</a>
             </div>
             <div class="right">
-                <button id="submit_btn" class="btn btn-success">Finish</button>
-                <input hidden="hidden" id="submit" type="submit" class="btn btn-success" value="Finish">
+                <input hidden="hidden"id="submit_btn" name="review_sentence_check" type="text">
+                <input id="submit" type="submit" class="btn btn-success" value="Finish">
             </div>
         </div>
     </form>
-
-    <div class="modal fade" id="start_task_Modal" tabindex="-1" role="dialog" aria-labelledby="start_task_ModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-                    <h4 class="modal-title" id="start_task_ModalLabel">Start Task</h4>
-                </div>
-                <div class="modal-body">
-				There is Sentence not been reviewed
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
-			    </div>
-            </div>
-        </div>
-    </div>
-
 </div>
 
 <script >
@@ -277,6 +259,13 @@
                         }
                     }
                 },
+                review_sentence_check: {
+                    remote: {
+                        type: 'POST',
+                        url: '/annotation_review/review_sentence_check/',
+                        message: 'There is sentence not been reviewed'
+                    },
+                }
             }
         });
 

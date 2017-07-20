@@ -86,7 +86,7 @@ def continue_work(request):
         reverse('annotation_review:detail', args=(sentence_review_list[0].review_sentence_index,)))
 
 
-# do annotation review page
+# Second do annotation review page
 
 
 @login_required()
@@ -146,7 +146,7 @@ def skip(request, annotation_review_id):
     return HttpResponseRedirect(reverse('annotation_review:detail', args=(1,)))
 
 
-# annotation review summary page
+# Third annotation review summary page
 
 
 @login_required()
@@ -230,6 +230,7 @@ def submit_work(request):
     return HttpResponseRedirect(reverse('annotation_review:finish_work', args=(work_set_id,)))
 
 
+# Forth Finish page
 @login_required()
 def finish_work(request, work_set_id):
     work_set_id = request.POST['work_set_id']
@@ -240,7 +241,9 @@ def finish_work(request, work_set_id):
     return render(request, 'annotation_review/complete.html', context)
 
 
-# valid function
+# Fifth Edit page
+
+# Ajax data valid function
 
 @csrf_exempt
 def valid_file_name(request):
