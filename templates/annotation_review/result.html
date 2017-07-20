@@ -30,7 +30,7 @@
         </div>
     </div>
 
-    <form class="form-horizontal" id="finish_task_form" role="form" action="{% url 'annotation_review:submit_work' %}">
+    <form class="form-horizontal" id="finish_task_form" role="form" action="{% url 'annotation_review:submit_work' %}" method="post">
         {% csrf_token %}
         <div class="panel panel-warning">
             <div class="panel-heading">

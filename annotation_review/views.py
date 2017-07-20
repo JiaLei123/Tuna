@@ -38,7 +38,8 @@ def index(request):
     context = {
         "language_list": language_list,
         "task_type_list": task_type_list,
-        'work_set_list': work_set_list
+        'work_set_list': work_set_list,
+        "user": user
     }
     return render(request, 'annotation_review/index.html', context)
 
@@ -57,15 +58,12 @@ def start_work(request):
     ticket_number = request.POST['ticket_number']
     work_set_name = os.path.basename(file_path)
 
-    try:
-        work_set_db = WorkSet.objects.get(work_set_name=work_set_name)
-    except WorkSet.DoesNotExist:
-        pass
-    else:
+    # TODO: should have a common error handel
+    if not work_set_name_valid(work_set_name):
         return HttpResponseRedirect(reverse('annotation_review:error'))
 
     work_set = WorkSet(work_set_name=work_set_name, is_complete=False, ticket_number=ticket_number, task_type=task_type,
-                       user=user)
+                       user=user, total_time_use=0, accuracy=0)
     work_set.save()
     accessor = file_accessor.FileAccessor(file_path)
     sentence_list = accessor.read_file()
@@ -79,19 +77,26 @@ def start_work(request):
             i = i + 1
 
     # get the first review sentence for this work set
-    review_sentence_start = ReviewSentence.objects.filter(work_set=work_set, review_sentence_index=1).values()
+    review_sentence_start = ReviewSentence.objects.filter(work_set=work_set, review_sentence_index=1)
 
-    return HttpResponseRedirect(reverse('annotation_review:detail', args=(review_sentence_start.id,)))
+    return HttpResponseRedirect(reverse('annotation_review:detail', args=(review_sentence_start[0].id,)))
 
 
 @login_required()
 def continue_work(request):
     work_set_id = request.POST['work_set_id']
     work_set = WorkSet.objects.get(id=work_set_id)
-    sentence_review_list = work_set.reviewsentence_set.filter(review_sentence_result=0).order_by(
+    sentence_not_review_list = work_set.reviewsentence_set.filter(review_sentence_result=0).order_by(
         "review_sentence_index")
+    if len(sentence_not_review_list) < 1:
+        # get the last sentence id on this work set
+        sentence_list = work_set.reviewsentence_set.all()
+        sentence_id = sentence_list[len(sentence_list)-1].id
+    else:
+        sentence_id = sentence_not_review_list[0].id
+
     return HttpResponseRedirect(
-        reverse('annotation_review:detail', args=(sentence_review_list[0].review_sentence_index,)))
+        reverse('annotation_review:detail', args=(sentence_id,)))
 
 
 # Second do annotation review page
@@ -131,7 +136,7 @@ def vote(request, annotation_review_id):
     """
     review_sentence = get_object_or_404(ReviewSentence, pk=annotation_review_id)
     try:
-        result = request.POST['optionsRadios']
+        result = request.POST['review_result']
         review_sentence.review_sentence_result = int(result)
     except:
         # Redisplay the question voting form.
@@ -144,14 +149,27 @@ def vote(request, annotation_review_id):
         # Always return an HttpResponseRedirect after successfully dealing
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
-
-        # TODO: should check if it is the last sentence
-        return HttpResponseRedirect(reverse('annotation_review:detail', args=(review_sentence.id + 1,)))
+        return vote_skip_redirect(review_sentence)
 
 
 @login_required()
 def skip(request, annotation_review_id):
-    return HttpResponseRedirect(reverse('annotation_review:detail', args=(1,)))
+    review_sentence = get_object_or_404(ReviewSentence, pk=annotation_review_id)
+    review_sentence.review_sentence_result = 4
+    review_sentence.save()
+    return vote_skip_redirect(review_sentence)
+
+
+def vote_skip_redirect(review_sentence):
+    work_set = review_sentence.work_set
+    sentence_not_review_list = work_set.reviewsentence_set.filter(review_sentence_result=0).order_by(
+        "review_sentence_index")
+    if len(sentence_not_review_list) < 1:
+        # when all sentence has been reviewed then redirect to summary page
+        return HttpResponseRedirect(reverse('annotation_review:show_summary', args=(work_set.id,)))
+
+    sentence_id = sentence_not_review_list[0].id
+    return HttpResponseRedirect(reverse('annotation_review:detail', args=(sentence_id,)))
 
 
 # Third annotation review summary page
@@ -161,7 +179,19 @@ def skip(request, annotation_review_id):
 def show_summary(request, work_set_id):
     user = UserInfo.objects.get(email=request.user)
     work_set = WorkSet.objects.get(pk=work_set_id)
+    # get the error pattern base on the currently review result
+    identify_error_pattern(work_set)
+    error_pattern_list = ErrorPattern.objects.all()
 
+    context = {
+        "work_set": work_set,
+        "error_pattern_list": error_pattern_list
+    }
+    return render(request, 'annotation_review/result.html', context)
+
+
+# TODO: replace it with a really error pattern function
+def identify_error_pattern(work_set):
     error_pattern_list = ErrorPattern.objects.all()
     if not error_pattern_list or len(error_pattern_list) < 1:
         error_pattern1 = ErrorPattern(error_pattern_text="Test error Pattern 退|<unk> 出|<unk> 地|<app> 图|<app>",
@@ -170,15 +200,6 @@ def show_summary(request, work_set_id):
         error_pattern2 = ErrorPattern(error_pattern_text="Test error Pattern 酷|<app> 狗|<app>", error_pattern_status=0,
                                       work_set=work_set)
         error_pattern2.save()
-
-    error_pattern_list = ErrorPattern.objects.all()
-
-    context = {
-        "work_set": work_set,
-        "error_pattern_list": error_pattern_list
-    }
-
-    return render(request, 'annotation_review/result.html', context)
 
 
 @login_required()
@@ -238,6 +259,12 @@ def submit_work(request):
     :return:
     """
     work_set_id = request.POST['work_set_id']
+    work_set = get_object_or_404(WorkSet, pk=work_set_id)
+    if not check_review_sentences(work_set):
+        return HttpResponseRedirect(reverse('annotation_review:error'))
+
+
+
     return HttpResponseRedirect(reverse('annotation_review:finish_work', args=(work_set_id,)))
 
 
@@ -265,8 +292,9 @@ def error_page(request):
 def valid_file_name(request):
     file_name = request.POST['file_name']
     accessor = file_accessor.FileAccessor(file_name)
-    valid = accessor.file_exit_valid()
+    work_set_name = os.path.basename(file_name)
 
+    valid = accessor.file_exit_valid() and accessor.file_format_valid() and work_set_name_valid(work_set_name)
     response = '{"valid":%s}' % valid
     return HttpResponse(response.lower())
 
@@ -281,14 +309,17 @@ def valid_ticket_number(request):
 def review_sentence_check(request):
     work_set_id = request.POST['review_sentence_check']
     work_set = WorkSet.objects.get(pk=work_set_id)
-    review_sentence_list = work_set.reviewsentence_set.all()
-    valid = True
-    for x in review_sentence_list:
-        if x.review_sentence_result == 0:
-            valid = False
-            break
+    valid = check_review_sentences(work_set)
     response = '{"valid":%s}' % valid
     return HttpResponse(response.lower())
+
+
+def check_review_sentences(work_set):
+    review_sentence_list = work_set.reviewsentence_set.all().filter(review_sentence_result=0)
+    valid = True
+    if len(review_sentence_list) > 0:
+        valid = False
+    return valid
 
 
 @login_required()
@@ -298,3 +329,14 @@ def unit_test(request):
     if language_name and language_name < 10:
         raise Http404("Annotation Review Item does not exist")
     return HttpResponse('Good')
+
+
+def work_set_name_valid(work_set_name):
+    try:
+        work_set_db = WorkSet.objects.get(work_set_name=work_set_name)
+    except WorkSet.DoesNotExist:
+        return True
+    else:
+        return False
+
+

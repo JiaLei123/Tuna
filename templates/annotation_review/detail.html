@@ -1,77 +1,100 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div id="page-content" class="container container-fluid main-container" role="main">
-        <div class="well">
-            <h3>To finish the Annotation review need to three steps:</h3>
-            <p>1.Identify if the given annotation is correct or not</p>
-            <p>2.For the incorrect item please provide the correct annotation and comments</p>
-            <p>3.After all done, it need click submit button to finish task</p>
+<div id="page-content" class="container container-fluid main-container" role="main">
+    <div class="well">
+        <h3>To finish the Annotation review need to three steps:</h3>
+        <p>1.Identify if the given annotation is correct or not</p>
+        <p>2.For the incorrect item please provide the correct annotation and comments</p>
+        <p>3.After all done, it need click submit button to finish task</p>
+    </div>
+
+    <!--<div class="page-header">-->
+        <!--<p>-->
+            <!--<button class="btn btn-success" type="button">Start Review</button>-->
+            <!--<button class="btn btn-success" type="button">Continue Review</button>-->
+        <!--</p>-->
+    <!--</div>-->
+
+
+    <h3>
+        <span class="label label-primary">Sentence {{language}}</span>
+    </h3>
+    <div class="progress">
+        <label>{{review_sentence.review_sentence_index}}/{{review_sentence.work_set_count}}</label>
+        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0"
+             aria-valuemax="100" style="width: {{process}}%">
+            <!--<span class="sr-only">20% Complete (success)</span>-->
         </div>
+    </div>
 
-        <!--<div class="page-header">-->
-            <!--<p>-->
-                <!--<button class="btn btn-success" type="button">Start Review</button>-->
-                <!--<button class="btn btn-success" type="button">Continue Review</button>-->
-            <!--</p>-->
-        <!--</div>-->
-
-
-        <h3>
-            <span class="label label-primary">Sentence {{language}}</span>
-        </h3>
-        <div class="progress">
-            <label>{{review_sentence.review_sentence_index}}/{{review_sentence.work_set_count}}</label>
-            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0"
-                 aria-valuemax="100" style="width: {{process}}%">
-                <!--<span class="sr-only">20% Complete (success)</span>-->
-            </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <!--<button>&lt;Previous</button>-->
+            <!--<button>Current;&gt;</button>-->
+            <form action="{% url 'annotation_review:vote' review_sentence.id %}" method="post" id="annotation_review_vote">
+                {% csrf_token %}
+                <div class="col-sm-1">
+                    <p><span>Text</span></p>
+                </div>
+                <div class="col-sm-6">
+                    <textarea class="form-control" rows="2">{{review_sentence.review_sentence_text}}</textarea>
+                </div>
+                <div class="col-sm-3 form-group">
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="review_result" id="optionsRadios1" value="1">
+                            Correct
+                        </label>
+                        <label>
+                            <input type="radio" name="review_result" id="optionsRadios2" value="2">
+                            Incorrect
+                        </label>
+                        <label>
+                            <input type="radio" name="review_result" id="optionsRadios3" value="3">
+                            Ambiguous
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-1">
+                    <input class="btn btn-success" type="submit" value="Submit">
+                </div>
+            </form>
+            <form action="{% url 'annotation_review:vote' review_sentence.id %}" method="post">
+                <div class="col-sm-1">
+                    <input class="btn btn-success" type="submit" value="Skip">
+                </div>
+            </form>
         </div>
-
-        <div class="row">
-            <div class="col-sm-12">
-                <!--<button>&lt;Previous</button>-->
-                <!--<button>Current;&gt;</button>-->
-                <form action="{% url 'annotation_review:vote' review_sentence.id %}" method="post">
-                    {% csrf_token %}
-                    <div class="col-sm-1">
-                        <p><span>Text</span></p>
-                    </div>
-                    <div class="col-sm-6">
-                        <textarea class="form-control" rows="2">{{review_sentence.review_sentence_text}}</textarea>
-                    </div>
-                    <div class="col-sm-3">
-                        <div class="radio">
-                            <label>
-                                <input type="radio" name="optionsRadios" id="optionsRadios1" value="1">
-                                Correct
-                            </label>
-                            <label>
-                                <input type="radio" name="optionsRadios" id="optionsRadios2" value="2">
-                                Incorrect
-                            </label>
-                            <label>
-                                <input type="radio" name="optionsRadios" id="optionsRadios3" value="3">
-                                Ambiguous
-                            </label>
-                        </div>
-                    </div>
-                    <div class="col-sm-1">
-                        <input class="btn btn-success" type="submit" value="Submit">
-                    </div>
-                </form>
-                <form action="{% url 'annotation_review:vote' review_sentence.id %}" method="post">
-                    <div class="col-sm-1">
-                        <input class="btn btn-success" type="submit" value="Skip">
-                    </div>
-                </form>
-            </div>
+    </div>
+    <div class="browse-horizontal">
+        <div class="right">
+            <a class="btn btn-success" href="{% url 'annotation_review:show_summary' work_set.id%}" role="button">Summary</a>
         </div>
-        <div class="browse-horizontal">
-            <div class="right">
-                <a class="btn btn-success" href="{% url 'annotation_review:show_summary' work_set.id%}" role="button">Summary</a>
-            </div>
-        </div>
+    </div>
+</div>
 
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#annotation_review_vote').bootstrapValidator({
+            message: 'This value is not valid',
+            feedbackIcons: {
+                valid: 'glyphicon glyphicon-ok',
+                invalid: 'glyphicon glyphicon-remove',
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            fields: {
+                review_result: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Should select one review result'
+                        },
+
+                    }
+                },
+            }
+        });
+    });
+</script>
 
 
 {#        <div id="annotation-work-area" class="row">#}
@@ -914,5 +937,5 @@
 {#            </div>#}
 {#            </div>#}
 {#        </div>#}
-    </div>
+
 {% endblock %}

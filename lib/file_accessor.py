@@ -13,6 +13,27 @@ class FileAccessor:
         else:
             return False
 
+    def file_format_valid(self):
+        """
+        input file format:
+        it should not be empty file
+        it should be tsv format, and should have as latest two column
+        :return:
+        """
+        try:
+            with open(self.file_path, 'r') as open_file:
+                lines = open_file.readlines()
+                if len(lines) < 1:
+                    return False
+                for line in lines:
+                    if line:
+                        sentence_list = line.split('\t')
+                        if len(sentence_list) < 2:
+                            return False
+            return True
+        except:
+            return False
+
     def read_file(self):
         try:
             with open(self.file_path, 'r') as open_file:
