@@ -28,6 +28,7 @@ class WorkSet(models.Model):
     ticket_number = models.CharField('ticket number which this work set belong to', max_length=30)
     total_time_use = models.IntegerField('total time use, the unit is minutes')
     accuracy = models.IntegerField('the working set accuracy')
+    # review_sentence_count = models.IntegerField('review sentence count in this work set')
     # create time, last modify time
     created_at = models.DateTimeField('work set create datetime', default=timezone.now)
     update_at = models.DateTimeField('work set last modify datetime', auto_now=True)
@@ -54,7 +55,7 @@ class ReviewSentence(models.Model):
 class ErrorPattern(models.Model):
     error_pattern_text = models.CharField('error pattern description', max_length=500)
     error_pattern_status = models.IntegerField('identify it the error pattern been marked, it should be 0 ,1 ,2')
-    error_pattern_comments= models.CharField('the comments for the error pattern', max_length=500)
+    error_pattern_comments = models.CharField('the comments for the error pattern', max_length=500)
     # create time, last modify time
     created_at = models.DateTimeField('review sentence create datetime', default=timezone.now)
     update_at = models.DateTimeField('review sentence last modify datetime', auto_now=True)

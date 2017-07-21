@@ -1,13 +1,17 @@
 {% extends 'base_without_timer.html' %}
 {% block content %}
 
-<h1>{{ work_set.work_set_name }} has finished review</h1>
+<div class="container">
+    <h2> Finished review</h2>
+    <h3>{{ work_set.work_set_name }}</h3>
 
-<ul>
-    <li>Language</li>
-    <li>review sentence count {{review_sentence_count}}</li>
-    <li>total time use</li>
-    <li>Review Statistics Accuracy {{work_set.accuracy}}</li>
-</ul>
+    <ul>
+        <li>Language</li>
+        <!-- <li>review sentence count {{work_set.review_sentence_count}}</li> -->
+        <li>total time use</li>
+        <li>Review Statistics Accuracy {{work_set.accuracy}}</li>
+    </ul>
+</div>
+
 
 {% endblock %}

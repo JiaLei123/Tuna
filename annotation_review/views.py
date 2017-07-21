@@ -182,10 +182,11 @@ def show_summary(request, work_set_id):
     # get the error pattern base on the currently review result
     identify_error_pattern(work_set)
     error_pattern_list = ErrorPattern.objects.all()
-
+    error_pattern_id_list = [str(error_pattern.id) for error_pattern in error_pattern_list]
     context = {
         "work_set": work_set,
-        "error_pattern_list": error_pattern_list
+        "error_pattern_list": error_pattern_list,
+        "error_pattern_id_list": ','.join(error_pattern_id_list)
     }
     return render(request, 'annotation_review/result.html', context)
 
@@ -262,16 +263,30 @@ def submit_work(request):
     work_set = get_object_or_404(WorkSet, pk=work_set_id)
     if not check_review_sentences(work_set):
         return HttpResponseRedirect(reverse('annotation_review:error'))
-
-
+    data = request.POST['post_data']
+    if data:
+        error_patterns_json = json.loads(data)
+        for error_pattern_json in error_patterns_json:
+            error_patter_id = error_pattern_json['ID']
+            error_pattern = get_object_or_404(ErrorPattern, pk=error_patter_id)
+            error_pattern.error_pattern_status = error_pattern_json['status']
+            error_pattern.error_pattern_comments = error_pattern_json['comments']
+            error_pattern.save()
+    finish_work_set()
 
     return HttpResponseRedirect(reverse('annotation_review:finish_work', args=(work_set_id,)))
+
+
+def finish_work_set(work_set):
+    # work_set.is_complete = True
+    work_set.accuracy = 80
+    work_set.total_time_use = 80
+    work_set.save()
 
 
 # Forth Finish page
 @login_required()
 def finish_work(request, work_set_id):
-    work_set_id = request.POST['work_set_id']
     work_set = get_object_or_404(WorkSet, pk=work_set_id)
     context = {
         "work_set": work_set,
@@ -307,7 +322,7 @@ def valid_ticket_number(request):
 
 @csrf_exempt
 def review_sentence_check(request):
-    work_set_id = request.POST['review_sentence_check']
+    work_set_id = request.POST['work_set_id']
     work_set = WorkSet.objects.get(pk=work_set_id)
     valid = check_review_sentences(work_set)
     response = '{"valid":%s}' % valid
