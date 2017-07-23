@@ -30,68 +30,65 @@
             </div>
         </div>
 
-        <form class="form-horizontal" id="finish_task_form" role="form"
-              action="{% url 'annotation_review:submit_work' %}" onsubmit="return transferTable()"
-              method="post">
+        <form class="form-horizontal" id="finish_task_form" action="{% url 'annotation_review:submit_work' %}"
+              onsubmit="return transferTable()" method="post">
             {% csrf_token %}
             <div class="panel panel-warning">
                 <div class="panel-heading">
                     Error Pattern
                 </div>
-            </div>
-            <div class="panel-body" id="error-pattern-table">
-
                 {% if error_pattern_list %}
-                    <table class="table" id="error_pattern_table">
-                        <thead hidden="hidden">
-                        <tr>
-                            <th>ID</th>
-                            <th>Text</th>
-                            <th>status</th>
-                            <th>comments</th>
-                        </tr>
-                        </thead>
-
-                        <tbody>
-                        {% for error_pattern in error_pattern_list %}
-                            <input type="text" hidden="hidden" name="work_set_id" value="{{ work_set.id }}">
-                            <p id="error_pattern_radio_{{ error_pattern.id }}"
-                               hidden="hidden">{{ error_pattern.error_pattern_status }}</p>
-                            <p id="error_pattern_id_list" hidden="hidden">{{ error_pattern_id_list }}</p>
-                            <input id="post_data" name="post_data" type="text" hidden="hidden">
+                    <div class="panel-body" id="error-pattern-table">
+                        <input type="text" hidden="hidden" name="work_set_id" value="{{ work_set.id }}">
+                        <table class="table" id="error_pattern_table">
+                            <thead hidden="hidden">
                             <tr>
-                                <td scope="row" name="error_pattern"> {{ error_pattern.id }}</td>
-                                <td>{{ error_pattern.error_pattern_text }}</td>
-                                <td>
-                                    <div class="form-group">
-                                        <label>
-                                            <input type="radio" name="error_pattern_status_{{ error_pattern.id }}"
-                                                   value="1">
-                                            Fit
-                                        </label>
-                                        <label>
-                                            <input type="radio" name="error_pattern_status_{{ error_pattern.id }}"
-                                                   value="2">
-                                            Not Fit
-                                        </label>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="form-group form-inline"
-                                         id="error_pattern_comments_block_{{ forloop.counter }}">
-                                        <label for="error_pattern_comments_id_{{ forloop.counter }}"
-                                               class="control-label">Comment</label>
-                                        <input type="text" class="form-control"
-                                               style="width: 70%; margin-left: 3px; margin-right: 3px;"
-                                               id="error_pattern_comments_id_{{ forloop.counter }}"
-                                               name="error_pattern_comments_{{ error_pattern.id }}"
-                                               value="{{ error_pattern.error_pattern_comments }}">
-                                    </div>
-                                </td>
+                                <th>ID</th>
+                                <th>Text</th>
+                                <th>status</th>
+                                <th>comments</th>
                             </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            {% for error_pattern in error_pattern_list %}
+                                <tr>
+                                    <td scope="row" name="error_pattern"> {{ error_pattern.id }}</td>
+                                    <td>{{ error_pattern.error_pattern_text }}</td>
+                                    <td>
+                                        <p id="error_pattern_radio_{{ error_pattern.id }}"
+                                           hidden="hidden">{{ error_pattern.error_pattern_status }}</p>
+                                        <div class="form-group radio">
+                                            <label>
+                                                <input type="radio" name="error_pattern_status_{{ error_pattern.id }}"
+                                                       value="1">
+                                                Fit
+                                            </label>
+                                            <label>
+                                                <input type="radio" name="error_pattern_status_{{ error_pattern.id }}"
+                                                       value="2">
+                                                Not Fit
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group form-inline"
+                                             id="error_pattern_comments_block_{{ forloop.counter }}">
+                                            <label for="error_pattern_comments_id_{{ forloop.counter }}"
+                                                   class="control-label">Comment</label>
+                                            <input type="text" class="form-control"
+                                                   style="width: 70%; margin-left: 3px; margin-right: 3px;"
+                                                   id="error_pattern_comments_id_{{ forloop.counter }}"
+                                                   name="error_pattern_comments_{{ error_pattern.id }}"
+                                                   value="{{ error_pattern.error_pattern_comments }}">
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <p id="error_pattern_id_list" hidden="hidden">{{ error_pattern_id_list }}</p>
+                        <input id="post_data" name="post_data" type="text" hidden="hidden">
+                    </div>
                 {% else %}
                     <h5>No error patters found for this work set base on the reviewed sentence, please first review all
                         sentences then check the summary again</h5>
@@ -107,6 +104,13 @@
                         200 </h4>
                 </div>
             </div>
+
+            <!-- <div class="row">
+            <div class="form-group right">
+                <input style="opacity:0" name="work_set_id" type="text" value="{{ work_set.id }}">
+            </div>
+        </div> -->
+
             <div class="browse-horizontal-cent form-group">
                 <div class="left">
                     <a class="btn btn-success" href="{% url 'annotation_review:previous_work' work_set.id %}"
@@ -114,94 +118,18 @@
                 </div>
 
                 <div class="right">
-                    <input type="submit" class="btn btn-success" value="Finish">
+                    <input id="submit" type="submit" class="btn btn-success" value="Finish">
                 </div>
             </div>
         </form>
     </div>
 
-    <script type="text/javascript">
-
+    <script>
         $(document).ready(function () {
-            init_validate();
+
             data_validate();
             initTable();
         });
-
-        function init_validate() {
-            $('#finish_task_form').bootstrapValidator({
-                message: 'This value is not valid',
-                fields: {
-                    error_pattern_status_1: {
-                        validators: {
-                            notEmpty: {
-                                message: 'The file name is required and cannot be empty'
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-
-        function data_validate() {
-            str_id_list = $('#error_pattern_id_list').text()
-            if (str_id_list !== null || str_id_list !== undefined || str_id_list !== '') {
-                var error_pattern_id_list = str_id_list.split(",")
-
-                for (var i = 0; i < error_pattern_id_list.length; i++) {
-                    var value = $("#error_pattern_radio_" + error_pattern_id_list[i]).text()
-                    if (value != 0) {
-                        if (value == 1) {
-                            $('input[name="error_pattern_status_' + error_pattern_id_list[i] + '"][value=' + value + ']').attr("checked", value);
-                            $('input[name="error_pattern_comments_' + error_pattern_id_list[i] + '"]').attr('disabled', 'disabled');
-                        }
-                        else
-                            $('input[name="error_pattern_status_' + error_pattern_id_list[i] + '"][value=' + value + ']').attr("checked", true);
-                    }
-
-                    $('#finish_task_form').bootstrapValidator('addField', 'error_pattern_comments_' + error_pattern_id_list[i], {
-                        validators: {
-                            notEmpty: {
-                                message: 'Comments should not be empty'
-                            }
-                        },
-                    });
-
-
-                    $('input[name="error_pattern_status_' + error_pattern_id_list[i] + '"]').on('change', {key: error_pattern_id_list[i]}, function (event) {
-                        var bootstrapValidator = $('#finish_task_form').data('bootstrapValidator'),
-                            pattern_fit = ($(this).val() == 2);
-
-                        bootstrapValidator.enableFieldValidators('error_pattern_comments_' + event.data.key.toString(), pattern_fit);
-
-                        if (pattern_fit) {
-                            $('#error_pattern_comments_id_' + event.data.key.toString()).removeAttr('disabled');
-                        }
-                        else {
-                            $('#error_pattern_comments_id_' + event.data.key.toString()).val("");
-                            $('#error_pattern_comments_id_' + event.data.key.toString()).attr('disabled', 'disabled');
-                        }
-                    });
-                }
-
-                $('#finish_task_form').bootstrapValidator('addField', 'error_pattern_comments_1', {
-                    validators: {
-                        notEmpty: {
-                            message: 'Comments should not be empty'
-                        }
-                    },
-                });
-                $('#finish_task_form').bootstrapValidator('addField', 'error_pattern_comments_2', {
-                    validators: {
-                        notEmpty: {
-                            message: 'Comments should not be empty'
-                        }
-                    },
-                });
-
-            }
-        }
 
         var $table = $('#table'),
             selections = [];
@@ -329,6 +257,89 @@
                 };
             }
             return {};
+        }
+
+
+        function data_validate() {
+            $('#finish_task_form').bootstrapValidator({
+                message: 'This value is not valid',
+                fields: {
+                    error_pattern_status: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The selection is required'
+                            }
+                        }
+                    }
+                }
+            });
+
+
+            str_id_list = $('#error_pattern_id_list').text()
+            if (str_id_list !== null || str_id_list !== undefined || str_id_list !== '') {
+                var error_pattern_id_list = str_id_list.split(",")
+
+                for (var i = 0; i < error_pattern_id_list.length; i++) {
+                    var value = $("#error_pattern_radio_" + error_pattern_id_list[i]).text()
+                    if (value != 0) {
+                        if (value == 1) {
+                            // then select fit
+                            $('input[name="error_pattern_status_' + error_pattern_id_list[i] + '"][value=' + value + ']').attr("checked", value);
+                            $('input[name="error_pattern_comments_' + error_pattern_id_list[i] + '"]').attr('disabled', 'disabled');
+                        }
+                        else
+                            $('input[name="error_pattern_status_' + error_pattern_id_list[i] + '"][value=' + value + ']').attr("checked", true);
+                    }
+
+                    $('#finish_task_form').bootstrapValidator('addField', 'error_pattern_comments_' + error_pattern_id_list[i], {
+                        validators: {
+                            notEmpty: {
+                                message: 'Comments should not be empty'
+                            }
+                        },
+                    });
+
+                    $('#finish_task_form').bootstrapValidator('addField', 'error_pattern_status_' + error_pattern_id_list[i], {
+                        validators: {
+                            notEmpty: {
+                                message: 'Comments should not be empty'
+                            }
+                        },
+                    });
+
+
+                    $('input[name="error_pattern_status_' + error_pattern_id_list[i] + '"]').on('change', {key: error_pattern_id_list[i]}, function (event) {
+                        var bootstrapValidator = $('#finish_task_form').data('bootstrapValidator'),
+                            pattern_fit = ($(this).val() == 2);
+
+                        bootstrapValidator.enableFieldValidators('error_pattern_comments_' + event.data.key.toString(), pattern_fit);
+
+                        if (pattern_fit) {
+                            $('#error_pattern_comments_id_' + event.data.key.toString()).removeAttr('disabled');
+                        }
+                        else {
+                            $('#error_pattern_comments_id_' + event.data.key.toString()).val("");
+                            $('#error_pattern_comments_id_' + event.data.key.toString()).attr('disabled', 'disabled');
+                        }
+                    });
+                }
+
+                $('#finish_task_form').bootstrapValidator('addField', 'error_pattern_comments_1', {
+                    validators: {
+                        notEmpty: {
+                            message: 'Comments should not be empty'
+                        }
+                    },
+                });
+                $('#finish_task_form').bootstrapValidator('addField', 'error_pattern_comments_2', {
+                    validators: {
+                        notEmpty: {
+                            message: 'Comments should not be empty'
+                        }
+                    },
+                });
+
+            }
         }
 
         function transferTable() {

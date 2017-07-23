@@ -61,12 +61,12 @@ def start_work(request):
     # TODO: should have a common error handel
     if not work_set_name_valid(work_set_name):
         return HttpResponseRedirect(reverse('annotation_review:error'))
-
-    work_set = WorkSet(work_set_name=work_set_name, is_complete=False, ticket_number=ticket_number, task_type=task_type,
-                       user=user, total_time_use=0, accuracy=0)
-    work_set.save()
     accessor = file_accessor.FileAccessor(file_path)
     sentence_list = accessor.read_file()
+    work_set = WorkSet(work_set_name=work_set_name, is_complete=False, ticket_number=ticket_number, task_type=task_type,
+                       user=user, total_time_use=0, accuracy=0, review_sentence_count=len(sentence_list))
+    work_set.save()
+
     if sentence_list:
         i = 1
         for sentence in sentence_list:

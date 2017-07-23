@@ -59,7 +59,8 @@
                     <input class="btn btn-success" type="submit" value="Submit">
                 </div>
             </form>
-            <form action="{% url 'annotation_review:vote' review_sentence.id %}" method="post">
+            <form action="{% url 'annotation_review:skip' review_sentence.id %}" method="post">
+                {% csrf_token %}
                 <div class="col-sm-1">
                     <input class="btn btn-success" type="submit" value="Skip">
                 </div>
