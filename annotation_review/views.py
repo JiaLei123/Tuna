@@ -198,6 +198,7 @@ def show_summary(request, work_set_id):
     work_set = WorkSet.objects.get(pk=work_set_id)
     # get the error pattern base on the currently review result
     identify_error_pattern(work_set)
+    calculate_work_set_statistics(work_set)
     error_pattern_list = ErrorPattern.objects.all()
     error_pattern_id_list = [str(error_pattern.id) for error_pattern in error_pattern_list]
     context = {
@@ -218,6 +219,15 @@ def identify_error_pattern(work_set):
         error_pattern2 = ErrorPattern(error_pattern_text="Test error Pattern 酷|<app> 狗|<app>", error_pattern_status=0,
                                       work_set=work_set)
         error_pattern2.save()
+
+
+def calculate_work_set_statistics(work_set):
+    time = 30
+    work_set.total_time_use = time
+    correct_sentence_count = work_set.reviewsentence_set.filter(review_sentence_result=1).count()
+    accuracy = (correct_sentence_count/work_set.review_sentence_count) * 100
+    work_set.accuracy = accuracy
+    work_set.save()
 
 
 @login_required()
