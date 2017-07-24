@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.db import models
+from django.utils import timezone
 
 # Create your models here.
 """
@@ -26,22 +27,23 @@ class RoleList(models.Model):
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, username=None, password=None):
+    def create_user(self, email, username, password=None):
+        """
+        create a user
+        :param email:
+        :param username:
+        :param password:
+        :return:
+        """
         if not email:
             raise ValueError('Users must have an email address')
-        if username:
-            username = email
-        user = self.model(
-            email=self.normalize_email(email),
-            username=username
-        )
 
+        user = self.model(email=self.normalize_email(email), username=username, last_login=timezone.now())
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, username=None, password=None):
-        username = email
+    def create_superuser(self, email, username, password):
         user = self.create_user(email,
                                 username=username,
                                 password=password,
@@ -58,12 +60,15 @@ class UserInfo(AbstractBaseUser):
     is_active = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     role = models.ForeignKey(RoleList, null=True, blank=True)
-
     objects = UserManager()
-    USERNAME_FIELD = 'email'
-    # REQUIRED_FIELDS = ['email']
 
-    def has_perm(self):
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
+
+    class Meta:
+        pass
+
+    def has_perm(self, perm, obj=None):
         if self.is_active and self.is_superuser:
             return True
 
