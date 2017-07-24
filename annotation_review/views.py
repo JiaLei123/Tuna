@@ -221,6 +221,7 @@ def identify_error_pattern(work_set):
         error_pattern2.save()
 
 
+# TODO: need collection the work time for the work set to get the time use
 def calculate_work_set_statistics(work_set):
     time = 30
     work_set.total_time_use = time
