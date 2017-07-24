@@ -54,8 +54,6 @@
                         <tbody>
                         {% for error_pattern in error_pattern_list %}
                         <p id="error_pattern_radio_{{ error_pattern.id }}" hidden="hidden">{{ error_pattern.error_pattern_status }}</p>
-
-
                         <tr>
                             <td scope="row" name="error_pattern"> {{ error_pattern.id }}</td>
                             <td>{{ error_pattern.error_pattern_text }}</td>
@@ -283,6 +281,7 @@
                         }
                         else
                             $('input[name="error_pattern_status_' + error_pattern_id_list[i] + '"][value=' + value + ']').attr("checked", true);
+                            $('input[name="error_pattern_comments_' + error_pattern_id_list[i] + '"]').removeAttr('disabled')
                     }
 
                     $('#finish_task_form').bootstrapValidator('addField', 'error_pattern_comments_' + error_pattern_id_list[i], {
@@ -296,7 +295,7 @@
                     $('#finish_task_form').bootstrapValidator('addField', 'error_pattern_status_' + error_pattern_id_list[i], {
                         validators: {
                             notEmpty: {
-                                message: 'Comments should not be empty'
+                                message: 'This selection should not be empty'
                             }
                         },
                     });
@@ -317,22 +316,6 @@
                         }
                     });
                 }
-
-                $('#finish_task_form').bootstrapValidator('addField', 'error_pattern_comments_1', {
-                    validators: {
-                        notEmpty: {
-                            message: 'Comments should not be empty'
-                        }
-                    },
-                });
-                $('#finish_task_form').bootstrapValidator('addField', 'error_pattern_comments_2', {
-                    validators: {
-                        notEmpty: {
-                            message: 'Comments should not be empty'
-                        }
-                    },
-                });
-
             }
         }
 
@@ -341,7 +324,12 @@
                 extractor: function (cellIndex, $cell) {
                     // get text from the span inside table cells;
                     // if empty or non-existant, get the cell text
-                    return $cell.find('input').val() || $cell.text();
+                    if (cellIndex == 2 || cellIndex == 3){
+                        return $cell.find('input').val()
+                    }
+                    else{
+                        return $cell.text();
+                    }
                 }
             });
             $('#post_data').attr("value", JSON.stringify(table));

@@ -86,15 +86,24 @@ def start_work(request):
 def continue_work(request):
     work_set_id = request.POST['work_set_id']
     work_set = WorkSet.objects.get(id=work_set_id)
+    return goto_review_page(work_set)
+
+
+def goto_review_page(work_set):
+    """
+    goto the review page with last not reviewed sentence, if all sentence have been reviewed then the last sentence will
+    be display
+    :param work_set:
+    :return:
+    """
     sentence_not_review_list = work_set.reviewsentence_set.filter(review_sentence_result=0).order_by(
         "review_sentence_index")
     if len(sentence_not_review_list) < 1:
         # get the last sentence id on this work set
         sentence_list = work_set.reviewsentence_set.all()
-        sentence_id = sentence_list[len(sentence_list)-1].id
+        sentence_id = sentence_list[len(sentence_list) - 1].id
     else:
         sentence_id = sentence_not_review_list[0].id
-
     return HttpResponseRedirect(
         reverse('annotation_review:detail', args=(sentence_id,)))
 
@@ -113,7 +122,7 @@ def detail(request, annotation_review_id):
     try:
         review_sentence = ReviewSentence.objects.get(pk=annotation_review_id)
         language = Language.objects.get(pk=review_sentence.language).name
-        process = review_sentence.review_sentence_index/review_sentence.work_set_count
+        process = (review_sentence.review_sentence_index/review_sentence.work_set_count) * 100
         work_set = WorkSet.objects.get(pk=review_sentence.work_set_id)
         context = {
             "work_set": work_set,
@@ -161,6 +170,12 @@ def skip(request, annotation_review_id):
 
 
 def vote_skip_redirect(review_sentence):
+    """
+    After submit the review result for a sentence, the next not reviewed sentence will be display, if there is not more
+    not reviewed sentence then it will go to the summary page
+    :param review_sentence:
+    :return:
+    """
     work_set = review_sentence.work_set
     sentence_not_review_list = work_set.reviewsentence_set.filter(review_sentence_result=0).order_by(
         "review_sentence_index")
@@ -243,10 +258,7 @@ def query_review_sentence_table(request, work_set_id):
 @login_required()
 def previous_work(request, work_set_id):
     work_set = WorkSet.objects.get(id=work_set_id)
-    sentence_review_list = work_set.reviewsentence_set.filter(review_sentence_result=0).order_by(
-        "review_sentence_index")
-    return HttpResponseRedirect(
-        reverse('annotation_review:detail', args=(sentence_review_list[0].review_sentence_index,)))
+    return goto_review_page(work_set)
 
 
 @login_required()
