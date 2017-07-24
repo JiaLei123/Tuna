@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from __future__ import division
 
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponseRedirect, HttpResponse
@@ -11,6 +12,7 @@ from .models import ReviewSentence, Language, TaskType, WorkSet, ErrorPattern
 from accounts.models import UserInfo
 from django.views.decorators.csrf import csrf_exempt
 from lib import file_accessor
+
 import os
 import json
 import sys

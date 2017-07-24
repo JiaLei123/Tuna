@@ -279,9 +279,10 @@
                             $('input[name="error_pattern_status_' + error_pattern_id_list[i] + '"][value=' + value + ']').attr("checked", value);
                             $('input[name="error_pattern_comments_' + error_pattern_id_list[i] + '"]').attr('disabled', 'disabled');
                         }
-                        else
+                        else{
                             $('input[name="error_pattern_status_' + error_pattern_id_list[i] + '"][value=' + value + ']').attr("checked", true);
-                            $('input[name="error_pattern_comments_' + error_pattern_id_list[i] + '"]').removeAttr('disabled')
+                            $('input[name="error_pattern_comments_' + error_pattern_id_list[i] + '"]').removeAttr('disabled');
+                        }
                     }
 
                     $('#finish_task_form').bootstrapValidator('addField', 'error_pattern_comments_' + error_pattern_id_list[i], {
