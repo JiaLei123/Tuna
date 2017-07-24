@@ -37,62 +37,58 @@
                 <div class="panel-heading">
                     Error Pattern
                 </div>
-                {% if error_pattern_list %}
-                    <div class="panel-body" id="error-pattern-table">
-                        <input type="text" hidden="hidden" name="work_set_id" value="{{ work_set.id }}">
-                        <table class="table" id="error_pattern_table">
-                            <thead hidden="hidden">
-                            <tr>
-                                <th>ID</th>
-                                <th>Text</th>
-                                <th>status</th>
-                                <th>comments</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for error_pattern in error_pattern_list %}
-                                <tr>
-                                    <td scope="row" name="error_pattern"> {{ error_pattern.id }}</td>
-                                    <td>{{ error_pattern.error_pattern_text }}</td>
-                                    <td>
-                                        <p id="error_pattern_radio_{{ error_pattern.id }}"
-                                           hidden="hidden">{{ error_pattern.error_pattern_status }}</p>
-                                        <div class="form-group radio">
-                                            <label>
-                                                <input type="radio" name="error_pattern_status_{{ error_pattern.id }}"
-                                                       value="1">
-                                                Fit
-                                            </label>
-                                            <label>
-                                                <input type="radio" name="error_pattern_status_{{ error_pattern.id }}"
-                                                       value="2">
-                                                Not Fit
-                                            </label>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="form-group form-inline"
-                                             id="error_pattern_comments_block_{{ forloop.counter }}">
-                                            <label for="error_pattern_comments_id_{{ forloop.counter }}"
-                                                   class="control-label">Comment</label>
-                                            <input type="text" class="form-control"
-                                                   style="width: 70%; margin-left: 3px; margin-right: 3px;"
-                                                   id="error_pattern_comments_id_{{ forloop.counter }}"
-                                                   name="error_pattern_comments_{{ error_pattern.id }}"
-                                                   value="{{ error_pattern.error_pattern_comments }}">
-                                        </div>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                        <p id="error_pattern_id_list" hidden="hidden">{{ error_pattern_id_list }}</p>
-                        <input id="post_data" name="post_data" type="text" hidden="hidden">
-                    </div>
-                {% else %}
+                <div class="panel-body" id="error-pattern-table">
+                    {% if error_pattern_list %}
+                    <input type="text" hidden="hidden" name="work_set_id" value="{{ work_set.id }}">
+                    <p id="error_pattern_id_list" hidden="hidden">{{ error_pattern_id_list }}</p>
+                    <input id="post_data" name="post_data" type="text" hidden="hidden">
+                    <table class="table" id="error_pattern_table">
+                        <thead hidden="hidden">
+                        <tr>
+                            <th>ID</th>
+                            <th>Text</th>
+                            <th>status</th>
+                            <th>comments</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for error_pattern in error_pattern_list %}
+                        <p id="error_pattern_radio_{{ error_pattern.id }}" hidden="hidden">{{ error_pattern.error_pattern_status }}</p>
+
+
+                        <tr>
+                            <td scope="row" name="error_pattern"> {{ error_pattern.id }}</td>
+                            <td>{{ error_pattern.error_pattern_text }}</td>
+                            <td>
+                                <div class="form-group radio">
+                                    <label>
+                                        <input type="radio" name="error_pattern_status_{{ error_pattern.id }}"
+                                               value="1">
+                                        Fit
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="error_pattern_status_{{ error_pattern.id }}"
+                                               value="2">
+                                        Not Fit
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group form-inline" id="error_pattern_comments_block_{{ forloop.counter }}">
+                                    <label for="error_pattern_comments_id_{{ forloop.counter }}" class="control-label">Comment</label>
+                                    <input type="text" class="form-control" id="error_pattern_comments_id_{{ forloop.counter }}"
+                                           name="error_pattern_comments_{{ error_pattern.id }}" value="{{ error_pattern.error_pattern_comments }}">
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
                     <h5>No error patters found for this work set base on the reviewed sentence, please first review all
                         sentences then check the summary again</h5>
-                {% endif %}
+                    {% endif %}
+                </div>
             </div>
 
             <div class="panel panel-primary">
@@ -116,7 +112,6 @@
                     <a class="btn btn-success" href="{% url 'annotation_review:previous_work' work_set.id %}"
                        role="button">Previous</a>
                 </div>
-
                 <div class="right">
                     <input type="submit" class="btn btn-success" value="Finish">
                 </div>
@@ -126,7 +121,6 @@
 
     <script>
         $(document).ready(function () {
-
             data_validate();
             initTable();
         });
