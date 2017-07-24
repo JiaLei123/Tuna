@@ -4,7 +4,7 @@
 from django import forms
 from django.contrib import auth
 from models import UserInfo, RoleList, PermissionList
-from django.contrib.auth.forms import ReadOnlyPasswordHashField
+from django.contrib.auth.forms import ReadOnlyPasswordHashField, PasswordResetForm
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 
@@ -34,6 +34,11 @@ class LoginUserForm(forms.Form):
 
     def get_user(self):
         return self.user_cache
+
+
+class PasswordResetForm(PasswordResetForm):
+    def end_email(slef, subject_template_name, email_template_name, context, from_email, to_email, html_email_template_name=None):
+        super.send_email(subject_template_name, email_template_name, context, from_email, to_email, html_email_template_name)
 
 
 class UserCreationForm(forms.ModelForm):

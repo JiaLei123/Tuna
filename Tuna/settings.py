@@ -141,3 +141,10 @@ STATICFILES_DIRS = (
 )
 
 AUTH_USER_MODEL = 'accounts.UserInfo'
+
+EMAIL_HOST = 'smtp.qq.com'
+EMAIL_PORT = '25'
+EMAIL_HOST_USER = '693248540@qq.com'
+EMAIL_HOST_PASSWORD = 'lj123817'
+UserEmail=''
+EMAIL_USE_TLS = True
