@@ -36,11 +36,6 @@ class LoginUserForm(forms.Form):
         return self.user_cache
 
 
-class PasswordResetForm(PasswordResetForm):
-    def end_email(slef, subject_template_name, email_template_name, context, from_email, to_email, html_email_template_name=None):
-        super.send_email(subject_template_name, email_template_name, context, from_email, to_email, html_email_template_name)
-
-
 class UserCreationForm(forms.ModelForm):
     password1 = forms.CharField(widget=forms.PasswordInput)
     password2 = forms.CharField(widget=forms.PasswordInput)
@@ -95,3 +90,47 @@ class UserAdmin(BaseUserAdmin):
     search_fields = ('email', 'username')
     ordering = ('email', 'username')
     filter_horizontal = ()
+
+
+class ChangePasswordForm(forms.Form):
+    old_password = forms.CharField(label='Current Password',
+                                   error_messages={'required': 'please input Current password'},
+                                   widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    new_password1 = forms.CharField(label='New Password', error_messages={'required': 'please input the new password'},
+                                    widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    new_password2 = forms.CharField(label='New Password Confirm',
+                                    error_messages={'required': 'please input the new password again'},
+                                    widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super(ChangePasswordForm, self).__init__(*args, **kwargs)
+
+    def clean_old_password(self):
+        old_password = self.cleaned_data["old_password"]
+        if not self.user.check_password(old_password):
+            raise forms.ValidationError(u'current password incorrect')
+        return old_password
+
+    def clean_new_password2(self):
+        password1 = self.cleaned_data.get('new_password1')
+        password2 = self.cleaned_data.get('new_password2')
+        if len(password1)<6:
+            raise forms.ValidationError('New Password should be bit than 6 bit')
+
+        if password1 and password2:
+            if password1 != password2:
+                raise forms.ValidationError('password is not same with before')
+        return password2
+
+    def save(self, commit=True):
+        self.user.set_password(self.cleaned_data['new_password1'])
+        if commit:
+            self.user.save()
+        return self.user
+
+class PasswordResetForm(PasswordResetForm):
+    def end_email(slef, subject_template_name, email_template_name, context, from_email, to_email,
+                  html_email_template_name=None):
+        super.send_email(subject_template_name, email_template_name, context, from_email, to_email,
+                         html_email_template_name)

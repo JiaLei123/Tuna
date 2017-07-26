@@ -10,5 +10,5 @@ urlpatterns = [
     url(r'^login/$', user.login, name='login'),
     url(r'^logout/$', user.logout, name='logout'),
     url(r'^password_reset/$', user.PasswordResetView.as_view(), name='password_reset'),
-
+    url(r'^change_password/$', user.change_password, name='change_password'),
 ]

@@ -6,7 +6,7 @@ from django.shortcuts import render, HttpResponseRedirect
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.contrib import auth
-from forms import LoginUserForm
+from forms import LoginUserForm, ChangePasswordForm
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.contrib.auth import views as auth_views
@@ -58,5 +58,19 @@ class PasswordResetView(auth_views.PasswordResetView):
     context_object_name = 'latest_question_list'
 
 
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = ChangePasswordForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('accounts:logout'))
+    else:
+        form = ChangePasswordForm(user=request.user)
+    kwargs = {
+        'form': form,
+        'request': request,
+    }
+    return render(request, 'accounts/change_password.html', kwargs)
 
 

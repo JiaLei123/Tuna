@@ -25,7 +25,6 @@ body {
 }
 .form-signin .form-control {
   position: relative;
-  height: auto;
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
           box-sizing: border-box;
@@ -45,4 +44,11 @@ body {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+
+.container h2,
+.container-fluid.main-container h3,
+.container-fluid.main-container h4 {
+    color: #4fa223;
+}
+
 

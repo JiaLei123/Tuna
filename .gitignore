@@ -1,4 +1,8 @@
 .idea
 Tuna.conf
+.vscode
 
 create_superuser.py
+*.pyc
+
+static/bootstrap-table/extensions/
