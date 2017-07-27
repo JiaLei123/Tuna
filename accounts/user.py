@@ -9,7 +9,6 @@ from django.contrib import auth
 from forms import LoginUserForm, ChangePasswordForm
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
-from django.contrib.auth import views as auth_views
 
 # Create your views here.
 def login(request):
@@ -53,11 +52,6 @@ def user_list(request):
     return render(request, 'accounts/user_list.html', kwargs)
 
 
-class PasswordResetView(auth_views.PasswordResetView):
-    template_name = 'polls/index.html'
-    context_object_name = 'latest_question_list'
-
-
 @login_required
 def change_password(request):
     if request.method == 'POST':
@@ -72,5 +66,3 @@ def change_password(request):
         'request': request,
     }
     return render(request, 'accounts/change_password.html', kwargs)
-
-

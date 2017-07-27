@@ -28,9 +28,9 @@
                 
                 <div class="form-actions">
                     <input type="hidden" name="next" value="{{ next }}"/>
-                    <input class="btn btn btn-success" name="commit" type="submit" value="Log in">
+                    <input class="btn btn-success" name="commit" type="submit" value="Log in">
                     <div class="shared-links">
-                        <a href="/users/password/new">Forgot your password?</a><br>
+                        <a href="{% url 'accounts:password_reset' %}">Forgot your password?</a><br>
                         <a href="/users/confirmation/new">Didn't receive confirmation instructions?</a><br>
                     </div>
                 </div>
